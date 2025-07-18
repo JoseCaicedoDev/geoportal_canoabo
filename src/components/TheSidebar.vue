@@ -1,8 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
+import { useLayerStore } from '@/stores/layerStore'
+import LayerContextMenu from './LayerContextMenu.vue'
 
 const { isDarkMode } = useDarkMode()
+const store = useLayerStore()
 const selectedBaseLayer = ref('satellite')
 const openAccordions = ref(new Set())
 
@@ -15,11 +18,25 @@ const toggleAccordion = (id) => {
 }
 
 const showContextMenu = (event, layerId) => {
-  // Implementar lógica del menú contextual
-  event.preventDefault()
-  event.stopPropagation()
-  // TO-DO: Implementar menú contextual
+  store.showContextMenu(event, layerId)
 }
+
+// Ocultar menú contextual al hacer clic fuera o al cambiar de ventana
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.context-menu')) {
+    store.hideContextMenu()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+  window.addEventListener('blur', store.hideContextMenu)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+  window.removeEventListener('blur', store.hideContextMenu)
+})
 </script>
 
 <template>
@@ -117,7 +134,12 @@ const showContextMenu = (event, layerId) => {
             >
               <div class="flex items-center justify-between group">
                 <label class="flex items-center space-x-3 cursor-pointer">
-                  <input type="checkbox" class="text-geo-secondary focus:ring-geo-secondary">
+                  <input
+                    type="checkbox"
+                    class="text-geo-secondary focus:ring-geo-secondary"
+                    :checked="store.selectedLayers.has('rio-canoabo')"
+                    @change="store.toggleLayer('rio-canoabo')"
+                  >
                   <span class="text-sm text-geo-text">Río Canoabo</span>
                 </label>
                 <div class="relative">
@@ -129,9 +151,20 @@ const showContextMenu = (event, layerId) => {
                   </button>
                 </div>
               </div>
-              <!-- Otros elementos de hidrología... -->
             </div>
           </div>
+
+          <!-- Menú contextual -->
+          <LayerContextMenu
+            v-if="store.activeContextMenu"
+            :show="!!store.activeContextMenu"
+            :layerId="store.activeContextMenu?.layerId"
+            :position="{
+              x: store.activeContextMenu?.x,
+              y: store.activeContextMenu?.y
+            }"
+            class="context-menu"
+          />
 
           <!-- Similar structure for Geology and Settlements -->
           <!-- ... -->
