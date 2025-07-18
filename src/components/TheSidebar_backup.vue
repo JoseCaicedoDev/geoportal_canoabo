@@ -151,7 +151,7 @@ onUnmounted(() => {
                   </button>
                 </div>
               </div>
-
+              
               <div class="flex items-center justify-between group">
                 <label class="flex items-center space-x-3 cursor-pointer">
                   <input
@@ -171,7 +171,7 @@ onUnmounted(() => {
                   </button>
                 </div>
               </div>
-
+              
               <div class="flex items-center justify-between group">
                 <label class="flex items-center space-x-3 cursor-pointer">
                   <input
@@ -191,7 +191,7 @@ onUnmounted(() => {
                   </button>
                 </div>
               </div>
-
+              
               <!-- Leyenda de Hidrología -->
               <div class="mt-3 pt-3 border-t border-geo-border">
                 <div class="space-y-1 text-sm">
@@ -203,6 +203,18 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
+
+          <!-- Menú contextual -->
+          <LayerContextMenu
+            v-if="store.activeContextMenu"
+            :show="!!store.activeContextMenu"
+            :layerId="store.activeContextMenu?.layerId"
+            :position="{
+              x: store.activeContextMenu?.x,
+              y: store.activeContextMenu?.y
+            }"
+            class="context-menu"
+          />
 
           <!-- Acordeón de Geología -->
           <div class="border border-geo-border rounded-lg">
@@ -242,7 +254,7 @@ onUnmounted(() => {
                   </button>
                 </div>
               </div>
-
+              
               <div class="flex items-center justify-between group">
                 <label class="flex items-center space-x-3 cursor-pointer">
                   <input
@@ -262,7 +274,7 @@ onUnmounted(() => {
                   </button>
                 </div>
               </div>
-
+              
               <!-- Leyenda de Geología -->
               <div class="mt-3 pt-3 border-t border-geo-border">
                 <div class="space-y-1 text-sm">
@@ -317,7 +329,7 @@ onUnmounted(() => {
                   </button>
                 </div>
               </div>
-
+              
               <div class="flex items-center justify-between group">
                 <label class="flex items-center space-x-3 cursor-pointer">
                   <input
@@ -337,7 +349,7 @@ onUnmounted(() => {
                   </button>
                 </div>
               </div>
-
+              
               <!-- Leyenda de Asentamientos -->
               <div class="mt-3 pt-3 border-t border-geo-border">
                 <div class="space-y-1 text-sm">
@@ -354,18 +366,6 @@ onUnmounted(() => {
             </div>
           </div>
         </div>
-
-        <!-- Menú contextual -->
-        <LayerContextMenu
-          v-if="store.activeContextMenu"
-          :show="!!store.activeContextMenu"
-          :layerId="store.activeContextMenu?.layerId"
-          :position="{
-            x: store.activeContextMenu?.x,
-            y: store.activeContextMenu?.y
-          }"
-          class="context-menu"
-        />
       </div>
     </div>
 
