@@ -1,38 +1,38 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { ref } from 'vue'
+import TheHeader from '@/components/TheHeader.vue'
+import TheSidebar from '@/components/TheSidebar.vue'
+import TheMap from '@/components/TheMap.vue'
+import AttributeTable from '@/components/AttributeTable.vue'
+
+const showAttributeTable = ref(false)
+const currentLayerId = ref(null)
+
+const handleShowAttributes = (layerId) => {
+  currentLayerId.value = layerId
+  showAttributeTable.value = true
+}
+
+const handleCloseAttributes = () => {
+  showAttributeTable.value = false
+}
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <header class="bg-white shadow">
-      <nav class="container mx-auto px-4 py-6">
-        <div class="flex justify-between items-center">
-          <div class="flex items-center space-x-8">
-            <RouterLink to="/" class="text-xl font-bold text-primary">GeoPortal</RouterLink>
-            <div class="space-x-4">
-              <RouterLink
-                to="/"
-                class="text-gray-600 hover:text-primary transition-colors"
-                active-class="text-primary"
-              >
-                Inicio
-              </RouterLink>
-              <RouterLink
-                to="/about"
-                class="text-gray-600 hover:text-primary transition-colors"
-                active-class="text-primary"
-              >
-                Acerca de
-              </RouterLink>
-            </div>
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <main class="container mx-auto px-4 py-8">
-      <RouterView />
-    </main>
+  <div class="h-screen flex flex-col bg-geo-light">
+    <TheHeader />
+    <div class="flex-1 flex">
+      <TheSidebar @show-attributes="handleShowAttributes" />
+      <div class="flex-1 relative flex flex-col">
+        <TheMap />
+        <AttributeTable
+          v-if="currentLayerId"
+          :layer-id="currentLayerId"
+          :is-visible="showAttributeTable"
+          @close="handleCloseAttributes"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
