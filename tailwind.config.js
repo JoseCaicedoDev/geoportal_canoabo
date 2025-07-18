@@ -4,16 +4,21 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: '#4F46E5',
         secondary: '#10B981',
-        'geo-primary': '#16a34a',
-        'geo-secondary': '#0ea5e9',
-        'geo-accent': '#f59e0b',
-        'geo-dark': '#1e293b',
-        'geo-light': '#f8fafc'
+        'geo-primary': 'var(--geo-primary)',
+        'geo-secondary': 'var(--geo-secondary)',
+        'geo-accent': 'var(--geo-accent)',
+        'geo-dark': 'var(--geo-dark)',
+        'geo-light': 'var(--geo-light)',
+        'geo-background': 'var(--geo-background)',
+        'geo-text': 'var(--geo-text)',
+        'geo-border': 'var(--geo-border)',
+        'geo-hover': 'var(--geo-hover)'
       }
     },
   },

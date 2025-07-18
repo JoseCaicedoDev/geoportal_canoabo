@@ -1,16 +1,12 @@
 <script setup>
 import { ref } from 'vue'
+import { useDarkMode } from '@/composables/useDarkMode'
 
-// Estado para el tema (modo claro/oscuro)
-const isDarkMode = ref(false)
+// Importamos el composable de dark mode
+const { isDarkMode, toggleDarkMode } = useDarkMode()
 
 // Estado para el idioma
 const currentLanguage = ref('ES')
-
-const toggleDarkMode = () => {
-  isDarkMode.value = !isDarkMode.value
-  // Aquí implementaremos la lógica para cambiar el tema
-}
 
 const changeLanguage = (lang) => {
   currentLanguage.value = lang
@@ -19,7 +15,7 @@ const changeLanguage = (lang) => {
 </script>
 
 <template>
-  <header class="bg-white shadow-lg border-b-2 border-geo-primary">
+  <header class="bg-geo-background shadow-lg border-b-2 border-geo-primary dark:border-geo-border">
     <div class="flex items-center justify-between px-6 py-4">
       <div class="flex items-center space-x-4">
         <div class="flex items-center space-x-2">
@@ -27,8 +23,8 @@ const changeLanguage = (lang) => {
             <i class="fas fa-globe text-white text-sm"></i>
           </div>
           <div>
-            <h1 class="text-xl font-bold text-geo-dark">GeoCanoabo</h1>
-            <p class="text-sm text-gray-600">Territorio en Datos</p>
+            <h1 class="text-xl font-bold text-geo-text">GeoCanoabo</h1>
+            <p class="text-sm text-geo-text/60">Territorio en Datos</p>
           </div>
         </div>
       </div>
@@ -40,7 +36,7 @@ const changeLanguage = (lang) => {
               'px-3 py-1 text-sm rounded-md transition-colors',
               currentLanguage === 'ES'
                 ? 'bg-geo-primary text-white hover:bg-green-600'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                : 'bg-geo-hover text-geo-text hover:bg-geo-hover/80'
             ]"
             @click="changeLanguage('ES')"
           >ES</button>
@@ -49,20 +45,20 @@ const changeLanguage = (lang) => {
               'px-3 py-1 text-sm rounded-md transition-colors',
               currentLanguage === 'EN'
                 ? 'bg-geo-primary text-white hover:bg-green-600'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                : 'bg-geo-hover text-geo-text hover:bg-geo-hover/80'
             ]"
             @click="changeLanguage('EN')"
           >EN</button>
         </div>
 
         <button
-          class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          class="p-2 rounded-lg hover:bg-geo-hover transition-colors text-geo-text"
           @click="toggleDarkMode"
+          :title="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
         >
           <i :class="[
             'fas',
-            isDarkMode ? 'fa-sun' : 'fa-moon',
-            'text-gray-600'
+            isDarkMode ? 'fa-sun' : 'fa-moon'
           ]"></i>
         </button>
       </div>

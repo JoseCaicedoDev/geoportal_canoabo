@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import { useDarkMode } from '@/composables/useDarkMode'
 
+const { isDarkMode } = useDarkMode()
 const props = defineProps({
   layerId: {
     type: String,
@@ -49,15 +51,15 @@ const filteredData = computed(() => {
 <template>
   <div
     v-show="isVisible"
-    class="bg-white border-t border-gray-200 shadow-lg"
+    class="bg-geo-background border-t border-geo-border shadow-lg"
     style="height: 300px;"
   >
     <!-- Header -->
-    <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-      <h3 class="font-semibold text-geo-dark flex items-center">
+    <div class="flex items-center justify-between p-4 border-b border-geo-border bg-geo-hover/50">
+      <h3 class="font-semibold text-geo-text flex items-center">
         <i class="fas fa-table mr-2 text-geo-accent"></i>
         Tabla de Atributos
-        <span class="ml-2 text-sm text-gray-600 font-normal">
+        <span class="ml-2 text-sm text-geo-text/60 font-normal">
           - {{ getLayerDisplayName(layerId) }}
         </span>
       </h3>
@@ -70,7 +72,7 @@ const filteredData = computed(() => {
           Exportar
         </button>
         <button
-          class="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+          class="p-1 text-geo-text/60 hover:text-geo-text transition-colors"
           @click="$emit('close')"
         >
           <i class="fas fa-times"></i>
@@ -86,14 +88,14 @@ const filteredData = computed(() => {
             v-model="searchTerm"
             type="text"
             placeholder="Buscar en los atributos..."
-            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-geo-primary focus:border-transparent"
+            class="w-full px-3 py-2 text-sm bg-geo-background border border-geo-border rounded-md focus:ring-2 focus:ring-geo-primary focus:border-transparent text-geo-text placeholder-geo-text/60"
           >
         </div>
         <div class="flex items-center space-x-2">
-          <span class="text-sm text-gray-600">Mostrar:</span>
+          <span class="text-sm text-geo-text/60">Mostrar:</span>
           <select
             v-model="recordsPerPage"
-            class="text-sm border border-gray-300 rounded-md px-2 py-1"
+            class="text-sm bg-geo-background border border-geo-border rounded-md px-2 py-1 text-geo-text"
           >
             <option value="10">10</option>
             <option value="25">25</option>
