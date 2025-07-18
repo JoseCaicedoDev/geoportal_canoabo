@@ -19,20 +19,24 @@ const handleCloseAttributes = () => {
 </script>
 
 <template>
-  <div class="h-screen flex flex-col bg-geo-light">
-    <TheHeader />
-    <div class="flex-1 flex">
-      <TheSidebar @show-attributes="handleShowAttributes" />
-      <div class="flex-1 relative flex flex-col">
-        <TheMap />
+  <div class="fixed inset-0 flex flex-col bg-geo-light">
+    <TheHeader class="flex-none" />
+    <main class="flex-1 flex min-h-0">
+      <TheSidebar
+        @show-attributes="handleShowAttributes"
+        class="w-[300px] flex-none overflow-hidden"
+      />
+      <div class="flex-1 relative min-w-0">
+        <TheMap class="absolute inset-0" />
         <AttributeTable
           v-if="currentLayerId"
           :layer-id="currentLayerId"
           :is-visible="showAttributeTable"
           @close="handleCloseAttributes"
+          class="absolute bottom-0 left-0 right-0 z-10"
         />
       </div>
-    </div>
+    </main>
   </div>
 </template>
 

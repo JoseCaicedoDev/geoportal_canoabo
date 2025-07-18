@@ -21,19 +21,19 @@ const showContextMenu = (event, layerId) => {
 </script>
 
 <template>
-  <div class="w-96 bg-white shadow-xl border-r border-gray-200 flex flex-col">
+  <div class="h-full bg-white shadow-xl border-r border-gray-200 flex flex-col">
     <!-- Tabs de navegación -->
     <div class="flex border-b border-gray-200">
-      <button class="flex-1 py-3 px-4 text-sm font-medium text-geo-primary border-b-2 border-geo-primary bg-green-50">
-        <i class="fas fa-layer-group mr-2"></i>
+      <button class="flex-1 py-2 px-3 text-sm font-medium text-geo-primary border-b-2 border-geo-primary bg-green-50">
+        <i class="fas fa-layer-group mr-1"></i>
         Capas
       </button>
-      <button class="flex-1 py-3 px-4 text-sm font-medium text-gray-600 hover:text-geo-primary transition-colors">
-        <i class="fas fa-chart-bar mr-2"></i>
+      <button class="flex-1 py-2 px-3 text-sm font-medium text-gray-600 hover:text-geo-primary transition-colors">
+        <i class="fas fa-chart-bar mr-1"></i>
         Análisis
       </button>
-      <button class="flex-1 py-3 px-4 text-sm font-medium text-gray-600 hover:text-geo-primary transition-colors">
-        <i class="fas fa-info-circle mr-2"></i>
+      <button class="flex-1 py-2 px-3 text-sm font-medium text-gray-600 hover:text-geo-primary transition-colors">
+        <i class="fas fa-info-circle mr-1"></i>
         Info
       </button>
     </div>
