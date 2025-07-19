@@ -229,15 +229,16 @@ export const layerService = {
     }
   },
 
-  async filterLayerData(layerId, query) {
-    const data = await this.getLayerData(layerId)
+  filterLayerData(data, query) {
     if (!query) return data
 
     const lowercaseQuery = query.toLowerCase()
     return data.filter(item =>
       (item.id && item.id.toLowerCase().includes(lowercaseQuery)) ||
       (item.nombre && item.nombre.toLowerCase().includes(lowercaseQuery)) ||
-      (item.tipo && item.tipo.toLowerCase().includes(lowercaseQuery))
+      (item.tipo && item.tipo.toLowerCase().includes(lowercaseQuery)) ||
+      (item.h1_text && item.h1_text.toLowerCase().includes(lowercaseQuery)) ||
+      (item.clasificacion && item.clasificacion.toLowerCase().includes(lowercaseQuery))
     )
   },
 

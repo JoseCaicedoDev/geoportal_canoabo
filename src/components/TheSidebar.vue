@@ -374,7 +374,7 @@ onUnmounted(() => {
           >
             <div class="flex items-center space-x-3">
               <div class="w-4 h-4 bg-geo-primary rounded"></div>
-              <span class="text-sm font-medium text-geo-text">Capas Base</span>
+              <span class="text-sm font-medium text-geo-text">Basemap</span>
             </div>
             <i :class="[
               'fas fa-chevron-down text-geo-text/60 transform transition-transform',
@@ -411,7 +411,7 @@ onUnmounted(() => {
           >
             <div class="flex items-center space-x-3">
               <div class="w-4 h-4 bg-geo-secondary rounded"></div>
-              <span class="text-sm font-medium text-geo-text">Capas de Datos</span>
+              <span class="text-sm font-medium text-geo-text">Capas</span>
             </div>
             <div class="flex items-center space-x-2">
               <i :class="[
@@ -497,7 +497,7 @@ onUnmounted(() => {
     <!-- Footer -->
     <footer class="bg-geo-dark p-2 mt-auto dark:bg-geo-dark/50">
         <div class="flex items-center space-x-2">
-          <p class="text-sm text-geo-text/80">© 2024 GeoCanoabo - Powered by Gira360</p>
+          <p class="text-sm text-geo-text/80">© 2024 Gira360 - Powered by JC</p>
         </div>
     </footer>
   </div>

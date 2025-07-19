@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useLayerStore } from '@/stores/layerStore'
 import { layerService } from '@/services/layerService'
 
@@ -9,26 +9,51 @@ const recordsPerPage = ref(10)
 const currentPage = ref(1)
 const sortField = ref('')
 const sortDirection = ref('asc')
+const layerData = ref([])
+const isLoading = ref(false)
 
 const layerFields = computed(() => {
-  if (!store.currentLayerId) return []
-  return layerService.getLayerFields(store.currentLayerId)
-})
+  if (layerData.value.length === 0) return []
 
-const rawLayerData = computed(() => {
-  if (!store.currentLayerId) return []
-  return layerService.getLayerData(store.currentLayerId)
+  // Generar campos automáticamente desde el primer registro
+  return Object.keys(layerData.value[0]).map(key => ({
+    key,
+    label: key.charAt(0).toUpperCase() + key.slice(1),
+    sortable: true,
+    type: typeof layerData.value[0][key] === 'number' ? 'number' : 'string'
+  }))
 })
 
 const filteredData = computed(() => {
-  if (!searchTerm.value) return rawLayerData.value
-  return layerService.filterLayerData(store.currentLayerId, searchTerm.value)
+  if (!searchTerm.value) return layerData.value
+  return layerService.filterLayerData(layerData.value, searchTerm.value)
 })
 
 const sortedData = computed(() => {
   if (!sortField.value) return filteredData.value
   return layerService.sortLayerData(filteredData.value, sortField.value, sortDirection.value)
 })
+
+// Función para cargar datos de la capa
+const loadLayerData = async (layerId) => {
+  if (!layerId) {
+    layerData.value = []
+    return
+  }
+
+  isLoading.value = true
+  try {
+    console.log('Loading data for layer:', layerId)
+    const data = await layerService.getLayerData(layerId)
+    layerData.value = data
+    console.log('Loaded data:', data)
+  } catch (error) {
+    console.error('Error loading layer data:', error)
+    layerData.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
 
 const displayName = computed(() => {
   if (!store.currentLayerId) return ''
@@ -96,6 +121,25 @@ const paginatedData = computed(() => {
   return sortedData.value.slice(start, end)
 })
 
+// Watcher para cargar datos cuando cambie la capa
+watch(() => store.currentLayerId, async (newLayerId) => {
+  console.log('Current layer changed:', newLayerId)
+  await loadLayerData(newLayerId)
+}, { immediate: true })
+
+// Watcher para visibilidad del panel
+watch(() => store.attributePanelVisible, (visible) => {
+  console.log('AttributePanel visibility changed:', visible, 'Current layer:', store.currentLayerId)
+})
+
+// Cargar datos iniciales
+onMounted(() => {
+  console.log('AttributePanel mounted, current layer:', store.currentLayerId)
+  if (store.currentLayerId) {
+    loadLayerData(store.currentLayerId)
+  }
+})
+
 const nextPage = () => {
   if (currentPage.value < totalPages.value) {
     currentPage.value++
@@ -116,8 +160,14 @@ const resetPagination = () => {
 }
 
 // Resetear paginación cuando cambie la capa
-watch(() => store.currentLayerId, () => {
+watch(() => store.currentLayerId, (newLayerId) => {
+  console.log('Current layer ID changed to:', newLayerId)
   resetPagination()
+})
+
+// Watch para debug de attributePanelVisible
+watch(() => store.attributePanelVisible, (visible) => {
+  console.log('Attribute panel visible:', visible)
 })
 
 // Resetear página cuando cambie el término de búsqueda
@@ -185,7 +235,21 @@ watch(searchTerm, () => {
 
       <!-- Table -->
       <div class="bg-geo-hover/50 rounded-lg overflow-hidden" style="height: 180px;">
-        <div class="overflow-auto h-full">
+        <!-- Loading state -->
+        <div v-if="isLoading" class="h-full flex items-center justify-center">
+          <div class="text-center">
+            <div class="animate-spin inline-block w-6 h-6 border-2 border-geo-primary border-r-transparent rounded-full"></div>
+            <p class="mt-2 text-sm text-geo-text/60">Cargando datos...</p>
+          </div>
+        </div>
+
+        <!-- No data state -->
+        <div v-else-if="layerData.length === 0" class="h-full flex items-center justify-center">
+          <p class="text-geo-text/60">No hay datos para mostrar</p>
+        </div>
+
+        <!-- Data table -->
+        <div v-else class="overflow-auto h-full">
           <table class="w-full text-sm">
             <thead class="bg-geo-hover sticky top-0">
               <tr>
@@ -239,11 +303,11 @@ watch(searchTerm, () => {
       <div class="mt-3 flex justify-between items-center">
         <div class="flex items-center space-x-4">
           <p class="text-xs text-geo-text/60">Fuente: Servicio WFS GeoServer</p>
-          <span class="text-xs text-geo-text/60">
+          <span class="text-xs text-geo-text/60" v-if="!isLoading">
             Mostrando {{ paginatedData.length }} de {{ sortedData.length }} registros
           </span>
         </div>
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2" v-if="!isLoading && layerData.length > 0">
           <button
             @click="clearSelection"
             class="px-3 py-1 text-xs bg-geo-primary text-white rounded-md hover:bg-green-600 transition-colors"

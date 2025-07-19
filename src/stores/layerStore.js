@@ -42,8 +42,10 @@ export const useLayerStore = defineStore('layer', () => {
   }
 
   const showAttributeTable = (layerId) => {
+    console.log('showAttributeTable called with layerId:', layerId)
     currentLayerId.value = layerId
     attributePanelVisible.value = true
+    console.log('After setting values - currentLayerId:', currentLayerId.value, 'attributePanelVisible:', attributePanelVisible.value)
   }
 
   const changeLayerStyle = async (layerId) => {
