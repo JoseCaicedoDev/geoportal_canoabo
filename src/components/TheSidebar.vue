@@ -7,7 +7,7 @@ import LayerContextMenu from './LayerContextMenu.vue'
 const { isDarkMode } = useDarkMode()
 const store = useLayerStore()
 const selectedBaseLayer = ref('world-imagery')
-const openAccordions = ref(new Set())
+const openAccordions = ref(new Set(['base-layers', 'data-layers'])) // Inicializar con ambos acordeones abiertos
 const baseLayers = ref({})
 
 // Importar mapService para manejar capas base
@@ -92,41 +92,69 @@ onUnmounted(() => {
     <!-- Contenido del sidebar -->
     <div class="flex-1 overflow-y-auto">
       <!-- Capas Base -->
-      <div class="p-4">
-        <h3 class="font-semibold text-geo-text mb-3 flex items-center">
-          <i class="fas fa-map mr-2 text-geo-primary"></i>
-          Capas Base
-        </h3>
-        <div class="space-y-2">
-          <label
-            v-for="(layer, layerId) in baseLayers"
-            :key="layerId"
-            class="flex items-center space-x-3 p-2 rounded-lg hover:bg-geo-hover cursor-pointer"
+        <div class="border border-geo-border rounded-lg">
+          <div
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-geo-hover"
+            @click="toggleAccordion('base-layers')"
           >
-            <input
-              type="radio"
-              name="baseLayer"
-              :value="layerId"
-              v-model="selectedBaseLayer"
-              class="text-geo-primary focus:ring-geo-primary"
+            <div class="flex items-center space-x-3">
+              <div class="w-4 h-4 bg-geo-primary rounded"></div>
+              <span class="text-sm font-medium text-geo-text">Capas Base</span>
+            </div>
+            <i :class="[
+              'fas fa-chevron-down text-geo-text/60 transform transition-transform',
+              openAccordions.has('base-layers') ? 'rotate-180' : ''
+            ]"></i>
+          </div>
+          <div
+            v-show="openAccordions.has('base-layers')"
+            class="border-t border-geo-border p-3 space-y-2 bg-geo-hover/50"
+          >
+            <label
+              v-for="(layer, layerId) in baseLayers"
+              :key="layerId"
+              class="flex items-center space-x-3 rounded-lg hover:bg-geo-hover cursor-pointer"
             >
-            <span class="text-sm text-geo-text">{{ layer.name }}</span>
-          </label>
+              <input
+                type="radio"
+                name="baseLayer"
+                :value="layerId"
+                v-model="selectedBaseLayer"
+                class="text-geo-primary focus:ring-geo-primary"
+              >
+              <span class="text-sm text-geo-text">{{ layer.name }}</span>
+            </label>
+          </div>
         </div>
-      </div>
+
 
       <!-- Capas de Datos -->
-      <div class="p-4 border-t border-geo-border">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="font-semibold text-geo-text flex items-center">
-            <i class="fas fa-database mr-2 text-geo-secondary"></i>
-            Capas de Datos
-          </h3>
-          <button class="text-xs text-geo-primary hover:text-green-600 transition-colors">
-            <i class="fas fa-plus mr-1"></i>
-            Agregar
-          </button>
-        </div>
+        <div class="border border-geo-border rounded-lg">
+          <div
+            class="flex items-center justify-between p-3 cursor-pointer hover:bg-geo-hover"
+            @click="toggleAccordion('data-layers')"
+          >
+            <div class="flex items-center space-x-3">
+              <div class="w-4 h-4 bg-geo-secondary rounded"></div>
+              <span class="text-sm font-medium text-geo-text">Capas de Datos</span>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button
+                class="text-xs text-geo-primary hover:text-green-600 transition-colors p-1"
+                @click.stop="() => {}"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+              <i :class="[
+                'fas fa-chevron-down text-geo-text/60 transform transition-transform',
+                openAccordions.has('data-layers') ? 'rotate-180' : ''
+              ]"></i>
+            </div>
+          </div>
+          <div
+            v-show="openAccordions.has('data-layers')"
+            class="border-t border-geo-border p-3 bg-geo-hover/50"
+          >
 
         <!-- Acordeón de Hidrología -->
         <div class="space-y-2">
@@ -406,8 +434,9 @@ onUnmounted(() => {
           }"
           class="context-menu"
         />
+          </div>
+        </div>
       </div>
-    </div>
 
     <!-- Footer -->
     <footer class="bg-geo-dark p-4 mt-auto dark:bg-geo-dark/50">
