@@ -291,6 +291,73 @@ class MapService {
     this.map.setView(this.initialCenter, this.initialZoom)
   }
 
+  // Feature selection and highlighting
+  selectFeature(layerId, featureId, coordinates = null) {
+    // Clear previous selections
+    this.clearSelection()
+
+    const layer = this.layers.get(layerId)
+    if (!layer) return false
+
+    // Find and highlight the feature
+    let featureFound = false
+    layer.eachLayer((feature) => {
+      if (feature.feature && (feature.feature.id === featureId || feature.feature.properties?.id === featureId)) {
+        // Highlight the feature
+        this.highlightFeature(feature)
+
+        // Zoom to feature
+        if (coordinates) {
+          this.map.setView([coordinates.lat, coordinates.lng], 16)
+        } else {
+          this.map.fitBounds(feature.getBounds(), { padding: [20, 20] })
+        }
+
+        featureFound = true
+        return
+      }
+    })
+
+    return featureFound
+  }
+
+  highlightFeature(feature) {
+    // Store original style
+    if (!feature._originalStyle) {
+      feature._originalStyle = {
+        color: feature.options.color,
+        weight: feature.options.weight,
+        fillColor: feature.options.fillColor,
+        fillOpacity: feature.options.fillOpacity
+      }
+    }
+
+    // Apply highlight style
+    feature.setStyle({
+      color: '#ff0000',
+      weight: 3,
+      fillColor: '#ff0000',
+      fillOpacity: 0.7
+    })
+
+    // Store reference for clearing later
+    this.selectedFeature = feature
+  }
+
+  clearSelection() {
+    if (this.selectedFeature) {
+      // Restore original style
+      if (this.selectedFeature._originalStyle) {
+        this.selectedFeature.setStyle(this.selectedFeature._originalStyle)
+      }
+      this.selectedFeature = null
+    }
+  }
+
+  zoomToFeature(layerId, featureId, coordinates = null) {
+    return this.selectFeature(layerId, featureId, coordinates)
+  }
+
   toggleFullscreen() {
     if (!document.fullscreenElement) {
       this.map.getContainer().requestFullscreen()

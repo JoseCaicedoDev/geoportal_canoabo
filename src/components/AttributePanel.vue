@@ -26,7 +26,7 @@
 
     <!-- Table Container -->
     <div class="p-4 pt-0">
-      <div class="bg-geo-hover/50 rounded-lg overflow-hidden" style="height: 180px;">
+      <div class="bg-geo-hover/50 rounded-lg overflow-auto" style="height: 180px;">
         <AttributeTable
           :attributes="paginatedAttributes"
           :columns="tableColumns"
@@ -189,6 +189,7 @@ const resetPagination = () => {
   searchComposable.clearAllFilters()
   sorting.clearSorting()
   selectedRowIndex.value = null
+  clearMapSelection()
 }
 
 const handleSearchChange = (term) => {
@@ -207,14 +208,51 @@ const handleSort = (columnKey) => {
 
 const handleRowSelect = (row, index) => {
   selectedRowIndex.value = selectedRowIndex.value === index ? null : index
-  // Zoom to feature if available
-  if (row.id) {
-    zoomToFeature(row.id)
+
+  // Select feature on map when row is clicked
+  if (selectedRowIndex.value === index) {
+    selectFeatureOnMap(row)
+  } else {
+    // Clear selection if row is deselected
+    clearMapSelection()
+  }
+}
+
+const selectFeatureOnMap = async (row) => {
+  try {
+    // Try different possible ID fields
+    const featureId = row.id || row.fid || row.objectid || row.gid
+
+    if (featureId && store.currentLayerId) {
+      console.log('Selecting feature on map:', featureId, 'for layer:', store.currentLayerId)
+      const success = await layerService.selectFeatureOnMap(store.currentLayerId, featureId)
+
+      if (success) {
+        showStatusMessage(`Feature ${featureId} seleccionado en el mapa`)
+      } else {
+        showStatusMessage('No se pudo localizar el feature en el mapa', 'warning')
+      }
+    } else {
+      showStatusMessage('No se encontró ID del feature para seleccionar', 'warning')
+    }
+  } catch (error) {
+    console.error('Error selecting feature on map:', error)
+    showStatusMessage('Error al seleccionar feature en el mapa', 'error')
+  }
+}
+
+const clearMapSelection = async () => {
+  try {
+    const { mapService } = await import('@/services/mapService.js')
+    mapService.clearSelection()
+  } catch (error) {
+    console.error('Error clearing map selection:', error)
   }
 }
 
 const handleClearSelection = () => {
   selectedRowIndex.value = null
+  clearMapSelection()
   showStatusMessage('Selección limpiada')
 }
 

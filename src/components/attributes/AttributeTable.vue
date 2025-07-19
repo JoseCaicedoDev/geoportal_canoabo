@@ -1,6 +1,6 @@
 <template>
   <section
-    class="bg-geo-background border border-geo-border rounded-lg overflow-hidden"
+    class="bg-geo-background border border-geo-border rounded-lg h-full"
     role="region"
     aria-label="Tabla de atributos"
   >
@@ -28,11 +28,11 @@
     <!-- Data Table -->
     <div
       v-else
-      class="overflow-auto max-h-96"
+      class="h-full"
       role="table"
       aria-label="Datos de atributos"
     >
-      <table class="min-w-full divide-y divide-geo-border">
+      <table class="w-full divide-y divide-geo-border" style="min-width: 1200px;">
         <!-- Table Header -->
         <thead
           class="bg-geo-primary/5 sticky top-0"
@@ -44,6 +44,7 @@
               :key="column.key"
               scope="col"
               class="px-4 py-3 text-left text-xs font-medium text-geo-text/70 uppercase tracking-wider cursor-pointer hover:bg-geo-primary/10 transition-colors"
+              style="min-width: 120px;"
               :class="{ 'bg-geo-primary/10': sortBy === column.key }"
               @click="$emit('sort', column.key)"
               :aria-sort="getSortDirection(column.key)"
@@ -74,20 +75,27 @@
           <tr
             v-for="(row, index) in paginatedData"
             :key="getRowKey(row, index)"
-            class="hover:bg-geo-primary/5 transition-colors"
+            class="hover:bg-geo-primary/5 transition-colors cursor-pointer select-none"
             role="row"
-            :class="{ 'bg-geo-primary/10': selectedRowIndex === index }"
+            :class="{
+              'bg-geo-primary/20 text-geo-primary font-medium': selectedRowIndex === index,
+              'hover:bg-geo-primary/10': selectedRowIndex !== index
+            }"
             @click="$emit('row-select', row, index)"
             tabindex="0"
             @keydown.enter="$emit('row-select', row, index)"
             @keydown.space.prevent="$emit('row-select', row, index)"
+            :aria-selected="selectedRowIndex === index"
+            :title="selectedRowIndex === index ? 'Fila seleccionada - clic para deseleccionar' : 'Clic para seleccionar fila y elemento en el mapa'"
           >
             <td
               v-for="column in columns"
               :key="column.key"
-              class="px-4 py-3 whitespace-nowrap text-sm text-geo-text"
+              class="px-4 py-3 whitespace-nowrap text-sm"
+              style="min-width: 120px;"
               role="gridcell"
               :data-label="column.label"
+              :class="selectedRowIndex === index ? 'text-geo-primary font-medium' : 'text-geo-text'"
             >
               <span
                 v-if="column.type === 'texture'"

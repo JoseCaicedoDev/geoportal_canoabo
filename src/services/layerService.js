@@ -263,6 +263,43 @@ export const layerService = {
         return aVal < bVal ? 1 : aVal > bVal ? -1 : 0
       }
     })
+  },
+
+  // Feature selection and map interaction
+  async zoomToFeature(layerId, featureId) {
+    try {
+      // Import mapService here to avoid circular dependency
+      const { mapService } = await import('./mapService.js')
+
+      // Get feature data to find coordinates if needed
+      const layerData = await this.getLayerData(layerId)
+      const feature = layerData.find(item =>
+        item.id === featureId ||
+        item.fid === featureId ||
+        String(item.id) === String(featureId)
+      )
+
+      let coordinates = null
+      if (feature && feature.geometry) {
+        // Extract coordinates from geometry
+        if (feature.geometry.type === 'Point') {
+          coordinates = {
+            lat: feature.geometry.coordinates[1],
+            lng: feature.geometry.coordinates[0]
+          }
+        }
+      }
+
+      // Select and zoom to feature on map
+      return mapService.selectFeature(layerId, featureId, coordinates)
+    } catch (error) {
+      console.error('Error zooming to feature:', error)
+      return false
+    }
+  },
+
+  async selectFeatureOnMap(layerId, featureId) {
+    return this.zoomToFeature(layerId, featureId)
   }
 }
 
