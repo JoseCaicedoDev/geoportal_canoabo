@@ -109,17 +109,21 @@ const handleLayerToggle = async (layerId) => {
               layer.bindPopup(popupContent)
             }
           })
+
+          // Agregar la capa al mapa para que sea visible
+          mapService.addLayer(layerId)
         }
       } catch (error) {
         console.error(`Error al cargar la capa ${layerId}:`, error)
         return // No actualizar el store si hay error
       }
+    } else {
+      // Si la capa ya existe, solo agregarla al mapa
+      if (mapService && mapService.addLayer) {
+        mapService.addLayer(layerId)
+      }
     }
 
-    // Agregar la capa al mapa si ya existe
-    if (mapService && mapService.addLayer) {
-      mapService.addLayer(layerId)
-    }
     store.toggleLayer(layerId) // Actualizar el store
   }
 }
@@ -133,6 +137,7 @@ const loadDefaultLayers = async () => {
       try {
         const layerConfig = layerService.getLayerConfig(layerId)
         if (layerConfig && layerConfig.url) {
+          // Crear la capa WFS
           await mapService.addWFSLayer(layerId, layerConfig.url, {
             style: layerConfig.style,
             onEachFeature: (feature, layer) => {
@@ -160,16 +165,24 @@ const loadDefaultLayers = async () => {
               layer.bindPopup(popupContent)
             }
           })
-          console.log(`Capa por defecto cargada: ${layerId}`)
+
+          // Agregar la capa al mapa para que sea visible
+          mapService.addLayer(layerId)
+          console.log(`Capa por defecto cargada y agregada al mapa: ${layerId}`)
         }
       } catch (error) {
         console.error(`Error al cargar la capa por defecto ${layerId}:`, error)
       }
     }
   }
-}
 
-// Ocultar menú contextual al hacer clic fuera o al cambiar de ventana
+  // Ajustar vista a las capas cargadas después de un breve delay
+  setTimeout(() => {
+    if (mapService && mapService.zoomToHome) {
+      mapService.zoomToHome()
+    }
+  }, 1000)
+}// Ocultar menú contextual al hacer clic fuera o al cambiar de ventana
 const handleClickOutside = (event) => {
   if (!event.target.closest('.context-menu')) {
     store.hideContextMenu()
