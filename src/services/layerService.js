@@ -95,6 +95,10 @@ export const layerService = {
     return layerGroups
   },
 
+  getLayerDisplayNames() {
+    return layerDisplayNames
+  },
+
   getLayerDisplayName(layerId) {
     return layerDisplayNames[layerId] || layerId
   },

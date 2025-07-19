@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useLayerStore } from '@/stores/layerStore'
+import { layerService } from '@/services/layerService'
 import LayerContextMenu from './LayerContextMenu.vue'
 
 const { isDarkMode } = useDarkMode()
@@ -9,6 +10,8 @@ const store = useLayerStore()
 const selectedBaseLayer = ref('world-imagery')
 const openAccordions = ref(new Set(['base-layers', 'data-layers'])) // Inicializar con ambos acordeones abiertos
 const baseLayers = ref({})
+const wfsLayerGroups = ref({})
+const wfsLayers = ref({})
 
 // Importar mapService para manejar capas base
 let mapService = null
@@ -37,6 +40,31 @@ watch(selectedBaseLayer, (newLayerId) => {
   handleBaseLayerChange(newLayerId)
 })
 
+// Funciones helper para las capas WFS
+const getAllWfsLayers = () => {
+  const allLayers = []
+  Object.values(wfsLayerGroups.value).forEach(group => {
+    allLayers.push(...group.layers)
+  })
+  return allLayers
+}
+
+const getLayerGroup = (layerId) => {
+  return Object.values(wfsLayerGroups.value).find(group =>
+    group.layers.includes(layerId)
+  )
+}
+
+const getLayerColorClass = (layerId) => {
+  const group = getLayerGroup(layerId)
+  return group ? `text-${group.color} focus:ring-${group.color}` : 'text-geo-primary focus:ring-geo-primary'
+}
+
+const getLayerIndicatorClass = (layerId) => {
+  const group = getLayerGroup(layerId)
+  return group ? `w-3 h-3 bg-${group.color} rounded-full` : 'w-3 h-3 bg-geo-primary rounded-full'
+}
+
 // Ocultar menú contextual al hacer clic fuera o al cambiar de ventana
 const handleClickOutside = (event) => {
   if (!event.target.closest('.context-menu')) {
@@ -48,6 +76,10 @@ onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   window.addEventListener('blur', store.hideContextMenu)
 
+  // Cargar capas WFS del layerService
+  wfsLayerGroups.value = layerService.getLayerGroups()
+  wfsLayers.value = layerService.getLayerDisplayNames()
+
   // Intentar obtener mapService con reintentos
   const checkMapService = () => {
     if (window.mapService) {
@@ -56,6 +88,7 @@ onMounted(async () => {
       // Sincronizar con la capa base actual
       selectedBaseLayer.value = mapService.getCurrentBaseLayerId()
       console.log('MapService conectado, capas base cargadas:', baseLayers.value)
+      console.log('Capas WFS cargadas:', wfsLayerGroups.value)
     } else {
       // Reintentar después de un breve delay
       setTimeout(checkMapService, 100)
@@ -139,12 +172,6 @@ onUnmounted(() => {
               <span class="text-sm font-medium text-geo-text">Capas de Datos</span>
             </div>
             <div class="flex items-center space-x-2">
-              <button
-                class="text-xs text-geo-primary hover:text-green-600 transition-colors p-1"
-                @click.stop="() => {}"
-              >
-                <i class="fas fa-plus"></i>
-              </button>
               <i :class="[
                 'fas fa-chevron-down text-geo-text/60 transform transition-transform',
                 openAccordions.has('data-layers') ? 'rotate-180' : ''
@@ -156,269 +183,32 @@ onUnmounted(() => {
             class="border-t border-geo-border p-3 bg-geo-hover/50"
           >
 
-        <!-- Acordeón de Hidrología -->
+        <!-- Lista plana de capas WFS sin acordeones anidados -->
         <div class="space-y-2">
-          <div class="border border-geo-border rounded-lg">
-            <div
-              class="flex items-center justify-between p-3 cursor-pointer hover:bg-geo-hover"
-              @click="toggleAccordion('hydrology')"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="w-4 h-4 bg-blue-500 rounded"></div>
-                <span class="text-sm font-medium text-geo-text">Hidrología</span>
+          <div
+            v-for="layerId in getAllWfsLayers()"
+            :key="layerId"
+            class="flex items-center justify-between group p-2 rounded-lg hover:bg-geo-hover"
+          >
+            <label class="flex items-center space-x-3 cursor-pointer">
+              <input
+                type="checkbox"
+                :class="getLayerColorClass(layerId)"
+                :checked="store.selectedLayers.has(layerId)"
+                @change="store.toggleLayer(layerId)"
+              >
+              <div class="flex items-center space-x-2">
+                <div :class="getLayerIndicatorClass(layerId)"></div>
+                <span class="text-sm text-geo-text">{{ wfsLayers[layerId] || layerId }}</span>
               </div>
-              <i :class="[
-                'fas fa-chevron-down text-geo-text/60 transform transition-transform',
-                openAccordions.has('hydrology') ? 'rotate-180' : ''
-              ]"></i>
-            </div>
-            <div
-              v-show="openAccordions.has('hydrology')"
-              class="border-t border-geo-border p-3 space-y-2 bg-geo-hover/50"
-            >
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-geo-secondary focus:ring-geo-secondary"
-                    :checked="store.selectedLayers.has('rio-canoabo')"
-                    @change="store.toggleLayer('rio-canoabo')"
-                  >
-                  <span class="text-sm text-geo-text">Río Canoabo</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'rio-canoabo')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-geo-secondary focus:ring-geo-secondary"
-                    :checked="store.selectedLayers.has('afluentes')"
-                    @change="store.toggleLayer('afluentes')"
-                  >
-                  <span class="text-sm text-geo-text">Afluentes</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'afluentes')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-geo-secondary focus:ring-geo-secondary"
-                    :checked="store.selectedLayers.has('cuenca')"
-                    @change="store.toggleLayer('cuenca')"
-                  >
-                  <span class="text-sm text-geo-text">Cuenca</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'cuenca')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Leyenda de Hidrología -->
-              <div class="mt-3 pt-3 border-t border-geo-border">
-                <div class="space-y-1 text-sm">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-1 bg-blue-500 rounded-full"></div>
-                    <span class="text-geo-text/70">Ríos / Cuerpos de Agua</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Acordeón de Geología -->
-          <div class="border border-geo-border rounded-lg">
-            <div
-              class="flex items-center justify-between p-3 cursor-pointer hover:bg-geo-hover"
-              @click="toggleAccordion('geology')"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="w-4 h-4 bg-amber-500 rounded"></div>
-                <span class="text-sm font-medium text-geo-text">Geología</span>
-              </div>
-              <i :class="[
-                'fas fa-chevron-down text-geo-text/60 transform transition-transform',
-                openAccordions.has('geology') ? 'rotate-180' : ''
-              ]"></i>
-            </div>
-            <div
-              v-show="openAccordions.has('geology')"
-              class="border-t border-geo-border p-3 space-y-2 bg-geo-hover/50"
-            >
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-geo-accent focus:ring-geo-accent"
-                    :checked="store.selectedLayers.has('formaciones')"
-                    @change="store.toggleLayer('formaciones')"
-                  >
-                  <span class="text-sm text-geo-text">Formaciones rocosas</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'formaciones')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-geo-accent focus:ring-geo-accent"
-                    :checked="store.selectedLayers.has('suelos')"
-                    @change="store.toggleLayer('suelos')"
-                  >
-                  <span class="text-sm text-geo-text">Tipos de suelo</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'suelos')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-geo-accent focus:ring-geo-accent"
-                    :checked="store.selectedLayers.has('suelos-wfs')"
-                    @change="store.toggleLayer('suelos-wfs')"
-                  >
-                  <span class="text-sm text-geo-text">Suelos Canoabo (WFS)</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'suelos-wfs')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Leyenda de Geología -->
-              <div class="mt-3 pt-3 border-t border-geo-border">
-                <div class="space-y-1 text-sm">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-amber-500 rounded-full"></div>
-                    <span class="text-geo-text/70">Tipos de Suelo</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-yellow-700 rounded-full"></div>
-                    <span class="text-geo-text/70">Formaciones Rocosas</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-orange-500 rounded-full"></div>
-                    <span class="text-geo-text/70">Suelos WFS</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Acordeón de Asentamientos -->
-          <div class="border border-geo-border rounded-lg">
-            <div
-              class="flex items-center justify-between p-3 cursor-pointer hover:bg-geo-hover"
-              @click="toggleAccordion('settlements')"
-            >
-              <div class="flex items-center space-x-3">
-                <div class="w-4 h-4 bg-red-500 rounded"></div>
-                <span class="text-sm font-medium text-geo-text">Asentamientos</span>
-              </div>
-              <i :class="[
-                'fas fa-chevron-down text-geo-text/60 transform transition-transform',
-                openAccordions.has('settlements') ? 'rotate-180' : ''
-              ]"></i>
-            </div>
-            <div
-              v-show="openAccordions.has('settlements')"
-              class="border-t border-geo-border p-3 space-y-2 bg-geo-hover/50"
-            >
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-red-500 focus:ring-red-500"
-                    :checked="store.selectedLayers.has('centros-poblados')"
-                    @change="store.toggleLayer('centros-poblados')"
-                  >
-                  <span class="text-sm text-geo-text">Centros poblados</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'centros-poblados')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-between group">
-                <label class="flex items-center space-x-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    class="text-red-500 focus:ring-red-500"
-                    :checked="store.selectedLayers.has('vias')"
-                    @change="store.toggleLayer('vias')"
-                  >
-                  <span class="text-sm text-geo-text">Vías</span>
-                </label>
-                <div class="relative">
-                  <button
-                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                    @click="showContextMenu($event, 'vias')"
-                  >
-                    <i class="fas fa-ellipsis-v text-xs"></i>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Leyenda de Asentamientos -->
-              <div class="mt-3 pt-3 border-t border-geo-border">
-                <div class="space-y-1 text-sm">
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-red-500 rounded-full"></div>
-                    <span class="text-geo-text/70">Centros Poblados</span>
-                  </div>
-                  <div class="flex items-center space-x-2">
-                    <div class="w-4 h-4 bg-gray-600 rounded-full"></div>
-                    <span class="text-geo-text/70">Vías</span>
-                  </div>
-                </div>
-              </div>
+            </label>
+            <div class="relative">
+              <button
+                class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
+                @click="showContextMenu($event, layerId)"
+              >
+                <i class="fas fa-ellipsis-v text-xs"></i>
+              </button>
             </div>
           </div>
         </div>
