@@ -8,6 +8,8 @@ export const useLayerStore = defineStore('layer', () => {
   const activeContextMenu = ref(null)
   const attributePanelVisible = ref(false)
   const currentLayerId = ref(null)
+  const layerDetailsModalVisible = ref(false)
+  const currentLayerDetails = ref(null)
 
   // Manejo de capas seleccionadas
   const toggleLayer = (layerId) => {
@@ -36,9 +38,29 @@ export const useLayerStore = defineStore('layer', () => {
 
   // Acciones del menú contextual
   const showLayerDetails = async (layerId) => {
-    const details = await layerService.showLayerProperties(layerId)
-    console.log('Detalles de capa:', details)
-    // Aquí se podría emitir un evento o mostrar un modal con los detalles
+    try {
+      const details = await layerService.showLayerProperties(layerId)
+      currentLayerDetails.value = {
+        id: layerId,
+        name: layerService.getLayerDisplayName(layerId),
+        ...details
+      }
+      layerDetailsModalVisible.value = true
+      console.log('Detalles de capa:', currentLayerDetails.value)
+    } catch (error) {
+      console.error('Error al cargar detalles de la capa:', error)
+      // Mostrar detalles básicos en caso de error
+      currentLayerDetails.value = {
+        id: layerId,
+        name: layerService.getLayerDisplayName(layerId)
+      }
+      layerDetailsModalVisible.value = true
+    }
+  }
+
+  const hideLayerDetails = () => {
+    layerDetailsModalVisible.value = false
+    currentLayerDetails.value = null
   }
 
   const showAttributeTable = (layerId) => {
@@ -76,10 +98,13 @@ export const useLayerStore = defineStore('layer', () => {
     activeContextMenu,
     attributePanelVisible,
     currentLayerId,
+    layerDetailsModalVisible,
+    currentLayerDetails,
     toggleLayer,
     showContextMenu,
     hideContextMenu,
     showLayerDetails,
+    hideLayerDetails,
     showAttributeTable,
     changeLayerStyle,
     downloadLayer

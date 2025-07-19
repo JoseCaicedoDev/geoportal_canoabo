@@ -55,30 +55,6 @@ const menuItems = computed(() => [
       store.showAttributeTable(props.layerId)
       store.hideContextMenu()
     }
-  },
-  {
-    icon: 'fas fa-palette',
-    text: 'Cambiar estilo',
-    action: () => {
-      store.changeLayerStyle(props.layerId)
-      store.hideContextMenu()
-    }
-  },
-  {
-    icon: 'fas fa-download',
-    text: 'Descargar',
-    action: () => {
-      store.downloadLayer(props.layerId)
-      store.hideContextMenu()
-    }
-  },
-  {
-    icon: 'fas fa-info-circle',
-    text: 'Propiedades',
-    action: () => {
-      store.showLayerDetails(props.layerId)
-      store.hideContextMenu()
-    }
   }
 ])
 </script>
