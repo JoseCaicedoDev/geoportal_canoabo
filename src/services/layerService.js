@@ -34,6 +34,7 @@ const layerDisplayNames = {
 const layerConfigs = {
   'suelos-wfs': {
     type: 'wfs',
+    geometryType: 'Point',
     url: GEOSERVER_WFS_SUELO_URL,
     style: {
       color: '#d97706',
@@ -45,6 +46,7 @@ const layerConfigs = {
   },
   'rios-wfs': {
     type: 'wfs',
+    geometryType: 'LineString',
     url: GEOSERVER_WFS_RIOS_URL,
     style: {
       color: '#0538ff',
@@ -56,6 +58,7 @@ const layerConfigs = {
   },
   'embalse-wfs': {
     type: 'wfs',
+    geometryType: 'Polygon',
     url: GEOSERVER_WFS_EMBALSE_URL,
     style: {
       color: '#0538ff',
@@ -67,6 +70,7 @@ const layerConfigs = {
   },
   'perimetro-wfs': {
     type: 'wfs',
+    geometryType: 'Polygon',
     url: GEOSERVER_WFS_PERIMETRO_URL,
     style: {
       color: '#dc2626',
@@ -108,6 +112,11 @@ export const layerService = {
 
   getLayerConfig(layerId) {
     return layerConfigs[layerId] || null
+  },
+
+  getLayerGeometryType(layerId) {
+    const config = layerConfigs[layerId]
+    return config ? config.geometryType : 'Unknown'
   },
 
   getLayerStyle(layerId, isDark = false) {

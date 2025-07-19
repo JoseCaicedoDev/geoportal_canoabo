@@ -62,7 +62,53 @@ const getLayerColorClass = (layerId) => {
 
 const getLayerIndicatorClass = (layerId) => {
   const group = getLayerGroup(layerId)
-  return group ? `w-3 h-3 bg-${group.color} rounded-full` : 'w-3 h-3 bg-geo-primary rounded-full'
+  const geometryType = layerService.getLayerGeometryType(layerId)
+
+  let baseColor = group ? group.color : 'geo-primary'
+
+  // Diferentes formas según el tipo de geometría
+  switch (geometryType) {
+    case 'Point':
+      return `w-3 h-3 bg-${baseColor} rounded-full` // Círculo para puntos
+    case 'LineString':
+      return `w-4 h-1 bg-${baseColor} rounded-sm` // Línea para linestrings
+    case 'Polygon':
+      return `w-3 h-3 bg-${baseColor} border border-${baseColor}` // Cuadrado para polígonos
+    default:
+      return `w-3 h-3 bg-${baseColor} rounded-full`
+  }
+}
+
+// Función para obtener el ícono según el tipo de geometría
+const getLayerIcon = (layerId) => {
+  const geometryType = layerService.getLayerGeometryType(layerId)
+
+  switch (geometryType) {
+    case 'Point':
+      return 'fas fa-circle'
+    case 'LineString':
+      return 'fas fa-minus'
+    case 'Polygon':
+      return 'fas fa-square'
+    default:
+      return 'fas fa-circle'
+  }
+}
+
+// Función para obtener el color según el grupo de capa
+const getLayerIconColor = (layerId) => {
+  const group = getLayerGroup(layerId)
+
+  switch (group?.color) {
+    case 'blue-500':
+      return 'text-blue-500'
+    case 'amber-500':
+      return 'text-amber-500'
+    case 'red-600':
+      return 'text-red-600'
+    default:
+      return 'text-geo-primary'
+  }
 }
 
 // Manejar toggle de capas WFS con agregado/eliminación de GeoJSON
@@ -304,36 +350,41 @@ onUnmounted(() => {
           >
 
         <!-- Lista plana de capas WFS sin acordeones anidados -->
-        <div class="space-y-2">
+        <div class="space-y-3">
           <div
             v-for="layerId in getAllWfsLayers()"
             :key="layerId"
-            class="flex items-center justify-between group p-2 rounded-lg hover:bg-geo-hover"
+            class="relative group p-3 rounded-lg border border-geo-border/30 hover:bg-geo-hover hover:border-geo-border transition-all"
           >
-            <label class="flex items-center space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                :class="getLayerColorClass(layerId)"
-                :checked="store.selectedLayers.has(layerId)"
-                @change="handleLayerToggle(layerId)"
-              >
+            <div class="flex items-center justify-between">
+              <label class="flex items-center space-x-3 cursor-pointer flex-1">
+                <input
+                  type="checkbox"
+                  :class="getLayerColorClass(layerId)"
+                  :checked="store.selectedLayers.has(layerId)"
+                  @change="handleLayerToggle(layerId)"
+                >
+                <div class="flex flex-col">
+                  <span class="text-sm font-medium text-geo-text">{{ wfsLayers[layerId] || layerId }}</span>
+                  <!-- Ícono del tipo de geometría debajo del nombre -->
+                  <div class="mt-1">
+                    <i :class="[getLayerIcon(layerId), getLayerIconColor(layerId), 'text-xs']"></i>
+                  </div>
+                </div>
+              </label>
+
               <div class="flex items-center space-x-2">
-                <div :class="getLayerIndicatorClass(layerId)"></div>
-                <span class="text-sm text-geo-text">{{ wfsLayers[layerId] || layerId }}</span>
+                <!-- Menú de opciones -->
+                <button
+                  class="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-geo-hover/50 text-geo-text/60 hover:text-geo-text transition-all"
+                  @click="showContextMenu($event, layerId)"
+                >
+                  <i class="fas fa-ellipsis-v text-xs"></i>
+                </button>
               </div>
-            </label>
-            <div class="relative">
-              <button
-                class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
-                @click="showContextMenu($event, layerId)"
-              >
-                <i class="fas fa-ellipsis-v text-xs"></i>
-              </button>
             </div>
           </div>
-        </div>
-
-        <!-- Menú contextual -->
+        </div>        <!-- Menú contextual -->
         <LayerContextMenu
           v-if="store.activeContextMenu"
           :show="!!store.activeContextMenu"
@@ -349,7 +400,7 @@ onUnmounted(() => {
       </div>
 
     <!-- Footer -->
-    <footer class="bg-geo-dark p-4 mt-auto dark:bg-geo-dark/50">
+    <footer class="bg-geo-dark p-2 mt-auto dark:bg-geo-dark/50">
         <div class="flex items-center space-x-2">
           <p class="text-sm text-geo-text/80">© 2024 GeoCanoabo - Powered by Gira360</p>
         </div>
