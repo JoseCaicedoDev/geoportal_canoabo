@@ -148,7 +148,33 @@ const handleLayerToggle = async (layerId) => {
       try {
         const layerConfig = layerService.getLayerConfig(layerId)
         if (layerConfig && layerConfig.url) {
-          await mapService.addWFSLayer(layerId, layerConfig.url, {
+          // Para suelos, no pasamos el style para permitir que mapService maneje los colores
+          const options = layerId === 'suelos-wfs' ? {
+            onEachFeature: (feature, layer) => {
+              // Popup básico para mostrar propiedades
+              let popupContent = `<div class="font-semibold mb-2 text-geo-primary">${wfsLayers.value[layerId] || layerId}</div>`
+              const props = feature.properties
+
+              // Mostrar las primeras propiedades más relevantes
+              const relevantProps = ['nombre', 'tipo', 'textura', 'h1_text', 'area']
+              relevantProps.forEach(prop => {
+                if (props[prop]) {
+                  popupContent += `<div><strong>${prop}:</strong> ${props[prop]}</div>`
+                }
+              })
+
+              // Agregar otras propiedades si hay espacio
+              let count = 0
+              for (const [key, value] of Object.entries(props)) {
+                if (!relevantProps.includes(key) && value !== null && value !== '' && count < 3) {
+                  popupContent += `<div><strong>${key}:</strong> ${value}</div>`
+                  count++
+                }
+              }
+
+              layer.bindPopup(popupContent)
+            }
+          } : {
             style: layerConfig.style,
             onEachFeature: (feature, layer) => {
               // Popup básico para mostrar propiedades
@@ -174,7 +200,9 @@ const handleLayerToggle = async (layerId) => {
 
               layer.bindPopup(popupContent)
             }
-          })
+          }
+
+          await mapService.addWFSLayer(layerId, layerConfig.url, options)
 
           // Agregar la capa al mapa para que sea visible
           mapService.addLayer(layerId)
@@ -203,8 +231,33 @@ const loadDefaultLayers = async () => {
       try {
         const layerConfig = layerService.getLayerConfig(layerId)
         if (layerConfig && layerConfig.url) {
-          // Crear la capa WFS
-          await mapService.addWFSLayer(layerId, layerConfig.url, {
+          // Para forzar la recarga, especialmente para suelos, no pasamos el style que pueda interferir
+          const options = layerId === 'suelos-wfs' ? {
+            onEachFeature: (feature, layer) => {
+              // Popup básico para mostrar propiedades
+              let popupContent = `<div class="font-semibold mb-2 text-geo-primary">${wfsLayers.value[layerId] || layerId}</div>`
+              const props = feature.properties
+
+              // Mostrar las primeras propiedades más relevantes
+              const relevantProps = ['nombre', 'tipo', 'textura', 'h1_text', 'area']
+              relevantProps.forEach(prop => {
+                if (props[prop]) {
+                  popupContent += `<div><strong>${prop}:</strong> ${props[prop]}</div>`
+                }
+              })
+
+              // Agregar otras propiedades si hay espacio
+              let count = 0
+              for (const [key, value] of Object.entries(props)) {
+                if (!relevantProps.includes(key) && value !== null && value !== '' && count < 3) {
+                  popupContent += `<div><strong>${key}:</strong> ${value}</div>`
+                  count++
+                }
+              }
+
+              layer.bindPopup(popupContent)
+            }
+          } : {
             style: layerConfig.style,
             onEachFeature: (feature, layer) => {
               // Popup básico para mostrar propiedades
@@ -230,7 +283,10 @@ const loadDefaultLayers = async () => {
 
               layer.bindPopup(popupContent)
             }
-          })
+          }
+
+          // Crear la capa WFS
+          await mapService.addWFSLayer(layerId, layerConfig.url, options)
 
           // Agregar la capa al mapa para que sea visible
           mapService.addLayer(layerId)
@@ -387,11 +443,11 @@ onUnmounted(() => {
                 >
                 <div class="flex flex-col">
                   <span class="text-sm font-medium text-geo-text">{{ wfsLayers[layerId] || layerId }}</span>
-                  <!-- Ícono del tipo de geometría debajo del nombre (excepto para suelos) -->
-                  <div v-if="layerId !== 'suelos-wfs'" class="mt-1">
+                  <!-- Ícono del tipo de geometría debajo del nombre (excepto para suelos) - solo cuando está activa -->
+                  <div v-if="layerId !== 'suelos-wfs' && store.selectedLayers.has(layerId)" class="mt-1">
                     <i :class="[getLayerIcon(layerId), getLayerIconColor(layerId), 'text-xs']"></i>
                   </div>
-                  <!-- Leyenda de texturas para suelos en lugar del ícono -->
+                  <!-- Leyenda de texturas para suelos en lugar del ícono - solo cuando está activa -->
                   <div v-if="layerId === 'suelos-wfs' && store.selectedLayers.has(layerId)" class="mt-2">
                     <div class="space-y-1">
                       <div

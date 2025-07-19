@@ -25,10 +25,10 @@ const layerGroups = {
 }
 
 const layerDisplayNames = {
-  'rios-wfs': 'Ríos Canoabo',
-  'embalse-wfs': 'Embalses Canoabo',
-  'suelos-wfs': 'Suelos Canoabo',
-  'perimetro-wfs': 'Perímetro Canoabo'
+  'rios-wfs': 'Ríos',
+  'embalse-wfs': 'Embalse',
+  'suelos-wfs': 'Suelo',
+  'perimetro-wfs': 'Perímetro'
 }
 
 const layerConfigs = {
@@ -44,14 +44,14 @@ const layerConfigs = {
       fillColor: '#f59e0b'
     },
     texturaColors: {
-      a: '#2d2139',
-      aF: '#7fa7c5',
-      F: '#3ecfc6',
-      Fa: '#8eea70',
-      FA: '#c2e96a',
-      FAa: '#e3a23c',
-      FL: '#a34b0e',
-      Si: '#2d1e1b'
+      a: '#2d2139',      // Arenoso
+      aF: '#7fa7c5',     // Areno Franco
+      F: '#3ecfc6',      // Franco
+      Fa: '#8eea70',     // Franco Arenoso
+      FA: '#c2e96a',     // Franco Arcilloso
+      FL: '#e3a23c',     // Franco Limoso
+      L: '#a34b0e',      // Limoso
+      A: '#e78a9b'       // Arcilloso
     }
   },
   'rios-wfs': {

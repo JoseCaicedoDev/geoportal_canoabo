@@ -121,79 +121,99 @@ class MapService {
 
       console.log(`GeoJSON cargado exitosamente: ${geojsonData.features.length} features`)
 
-      const defaultStyle = {
-        color: '#16a34a',
-        weight: 2,
-        opacity: 0.8,
-        fillOpacity: 0.3
-      }
+      let layer
 
       // Configuración específica para suelos con colores por textura
-      const texturaColors = {
-        a: '#2d2139',
-        aF: '#7fa7c5',
-        F: '#3ecfc6',
-        Fa: '#8eea70',
-        FA: '#c2e96a',
-        FAa: '#e3a23c',
-        FL: '#a34b0e',
-        Si: '#2d1e1b'
-      }
+      if (layerId === 'suelos-wfs') {
+        console.log('Configurando capa de suelos con colores por textura')
 
-      const layerConfig = {
-        style: feature => {
-          // Estilo para polígonos
-          return { ...defaultStyle, ...options.style }
-        },
-        pointToLayer: (feature, latlng) => {
-          // Manejo específico para puntos
-          const nombre = feature.properties.h1_text || feature.properties.textura || 'Si'
-          const color = texturaColors[nombre] || '#888'
+        const texturaColors = {
+          a: '#2d2139',      // Arenoso
+          aF: '#7fa7c5',     // Areno Franco
+          F: '#3ecfc6',      // Franco
+          Fa: '#8eea70',     // Franco Arenoso
+          FA: '#c2e96a',     // Franco Arcilloso
+          FL: '#e3a23c',     // Franco Limoso
+          L: '#a34b0e',      // Limoso
+          A: '#e78a9b'       // Arcilloso
+        }
 
-          return L.circleMarker(latlng, {
-            radius: 6,
-            fillColor: color,
-            color: '#222',
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.9
-          })
-        },
-        onEachFeature: (feature, layer) => {
-          if (options.onEachFeature) {
-            options.onEachFeature(feature, layer)
-          } else {
-            // Popup por defecto con propiedades
-            let popupContent = '<div class="font-semibold mb-2 text-amber-600">Información del Suelo</div>'
-            const props = feature.properties
+        layer = L.geoJSON(geojsonData, {
+          pointToLayer(feature, latlng) {
+            const texturaValue = feature.properties.h1_text || feature.properties.textura || 'A'
+            const color = texturaColors[texturaValue] || '#888888'
 
-            // Mostrar propiedades más relevantes primero
-            if (props.h1_text) popupContent += `<div><strong>Textura:</strong> ${props.h1_text}</div>`
-            if (props.nombre) popupContent += `<div><strong>Nombre:</strong> ${props.nombre}</div>`
-            if (props.tipo) popupContent += `<div><strong>Tipo:</strong> ${props.tipo}</div>`
-            if (props.area) popupContent += `<div><strong>Área:</strong> ${props.area}</div>`
+            console.log(`Punto de suelo: textura=${texturaValue}, color=${color}`)
 
-            // Agregar otras propiedades importantes
-            for (const [key, value] of Object.entries(props)) {
-              if (!['h1_text', 'nombre', 'tipo', 'area'].includes(key) && value !== null && value !== '') {
-                popupContent += `<div><strong>${key}:</strong> ${value}</div>`
+            return L.circleMarker(latlng, {
+              radius: 6,
+              fillColor: color,
+              color: '#222',
+              weight: 1,
+              opacity: 1,
+              fillOpacity: 0.9
+            })
+          },
+          onEachFeature: (feature, layer) => {
+            if (options.onEachFeature) {
+              options.onEachFeature(feature, layer)
+            } else {
+              // Popup por defecto con propiedades para suelos
+              let popupContent = '<div class="font-semibold mb-2 text-amber-600">Información del Suelo</div>'
+              const props = feature.properties
+
+              if (props.h1_text) popupContent += `<div><strong>Textura:</strong> ${props.h1_text}</div>`
+              if (props.nombre) popupContent += `<div><strong>Nombre:</strong> ${props.nombre}</div>`
+              if (props.tipo) popupContent += `<div><strong>Tipo:</strong> ${props.tipo}</div>`
+              if (props.area) popupContent += `<div><strong>Área:</strong> ${props.area}</div>`
+
+              for (const [key, value] of Object.entries(props)) {
+                if (!['h1_text', 'nombre', 'tipo', 'area'].includes(key) && value !== null && value !== '') {
+                  popupContent += `<div><strong>${key}:</strong> ${value}</div>`
+                }
               }
-            }
 
-            layer.bindPopup(popupContent)
+              layer.bindPopup(popupContent)
+            }
+          }
+        })
+      } else {
+        // Configuración para otras capas (ríos, perímetro, embalses)
+        const defaultStyle = {
+          color: '#16a34a',
+          weight: 2,
+          opacity: 0.8,
+          fillOpacity: 0.3
+        }
+
+        const layerConfig = {
+          style: feature => {
+            return { ...defaultStyle, ...options.style }
+          },
+          onEachFeature: (feature, layer) => {
+            if (options.onEachFeature) {
+              options.onEachFeature(feature, layer)
+            } else {
+              let popupContent = `<div class="font-semibold mb-2 text-geo-primary">${layerId}</div>`
+              const props = feature.properties
+
+              for (const [key, value] of Object.entries(props)) {
+                if (value !== null && value !== '') {
+                  popupContent += `<div><strong>${key}:</strong> ${value}</div>`
+                }
+              }
+
+              layer.bindPopup(popupContent)
+            }
           }
         }
-      }
 
-      // Aplicar configuraciones adicionales si se proporcionan
-      if (options.pointToLayer) {
-        layerConfig.pointToLayer = options.pointToLayer
-      }
-      if (options.style) {
-        layerConfig.style = feature => ({ ...defaultStyle, ...options.style })
-      }
+        if (options.pointToLayer) {
+          layerConfig.pointToLayer = options.pointToLayer
+        }
 
-      const layer = L.geoJSON(geojsonData, layerConfig)
+        layer = L.geoJSON(geojsonData, layerConfig)
+      }
 
       this.layers.set(layerId, layer)
       console.log(`Capa ${layerId} creada exitosamente`)
