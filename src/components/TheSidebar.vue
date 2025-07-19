@@ -65,6 +65,110 @@ const getLayerIndicatorClass = (layerId) => {
   return group ? `w-3 h-3 bg-${group.color} rounded-full` : 'w-3 h-3 bg-geo-primary rounded-full'
 }
 
+// Manejar toggle de capas WFS con agregado/eliminación de GeoJSON
+const handleLayerToggle = async (layerId) => {
+  const isCurrentlySelected = store.selectedLayers.has(layerId)
+
+  if (isCurrentlySelected) {
+    // Quitar la capa del mapa
+    if (mapService && mapService.removeLayer) {
+      mapService.removeLayer(layerId)
+    }
+    store.toggleLayer(layerId) // Actualizar el store
+  } else {
+    // Agregar la capa al mapa
+    if (mapService && mapService.hasLayer && !mapService.hasLayer(layerId)) {
+      // Si la capa no existe en el mapa, cargarla primero
+      try {
+        const layerConfig = layerService.getLayerConfig(layerId)
+        if (layerConfig && layerConfig.url) {
+          await mapService.addWFSLayer(layerId, layerConfig.url, {
+            style: layerConfig.style,
+            onEachFeature: (feature, layer) => {
+              // Popup básico para mostrar propiedades
+              let popupContent = `<div class="font-semibold mb-2 text-geo-primary">${wfsLayers.value[layerId] || layerId}</div>`
+              const props = feature.properties
+
+              // Mostrar las primeras propiedades más relevantes
+              const relevantProps = ['nombre', 'tipo', 'textura', 'h1_text', 'area']
+              relevantProps.forEach(prop => {
+                if (props[prop]) {
+                  popupContent += `<div><strong>${prop}:</strong> ${props[prop]}</div>`
+                }
+              })
+
+              // Agregar otras propiedades si hay espacio
+              let count = 0
+              for (const [key, value] of Object.entries(props)) {
+                if (!relevantProps.includes(key) && value !== null && value !== '' && count < 3) {
+                  popupContent += `<div><strong>${key}:</strong> ${value}</div>`
+                  count++
+                }
+              }
+
+              layer.bindPopup(popupContent)
+            }
+          })
+        }
+      } catch (error) {
+        console.error(`Error al cargar la capa ${layerId}:`, error)
+        return // No actualizar el store si hay error
+      }
+    }
+
+    // Agregar la capa al mapa si ya existe
+    if (mapService && mapService.addLayer) {
+      mapService.addLayer(layerId)
+    }
+    store.toggleLayer(layerId) // Actualizar el store
+  }
+}
+
+// Función para cargar capas por defecto
+const loadDefaultLayers = async () => {
+  const defaultLayers = ['suelos-wfs', 'perimetro-wfs']
+
+  for (const layerId of defaultLayers) {
+    if (mapService && mapService.hasLayer && !mapService.hasLayer(layerId)) {
+      try {
+        const layerConfig = layerService.getLayerConfig(layerId)
+        if (layerConfig && layerConfig.url) {
+          await mapService.addWFSLayer(layerId, layerConfig.url, {
+            style: layerConfig.style,
+            onEachFeature: (feature, layer) => {
+              // Popup básico para mostrar propiedades
+              let popupContent = `<div class="font-semibold mb-2 text-geo-primary">${wfsLayers.value[layerId] || layerId}</div>`
+              const props = feature.properties
+
+              // Mostrar las primeras propiedades más relevantes
+              const relevantProps = ['nombre', 'tipo', 'textura', 'h1_text', 'area']
+              relevantProps.forEach(prop => {
+                if (props[prop]) {
+                  popupContent += `<div><strong>${prop}:</strong> ${props[prop]}</div>`
+                }
+              })
+
+              // Agregar otras propiedades si hay espacio
+              let count = 0
+              for (const [key, value] of Object.entries(props)) {
+                if (!relevantProps.includes(key) && value !== null && value !== '' && count < 3) {
+                  popupContent += `<div><strong>${key}:</strong> ${value}</div>`
+                  count++
+                }
+              }
+
+              layer.bindPopup(popupContent)
+            }
+          })
+          console.log(`Capa por defecto cargada: ${layerId}`)
+        }
+      } catch (error) {
+        console.error(`Error al cargar la capa por defecto ${layerId}:`, error)
+      }
+    }
+  }
+}
+
 // Ocultar menú contextual al hacer clic fuera o al cambiar de ventana
 const handleClickOutside = (event) => {
   if (!event.target.closest('.context-menu')) {
@@ -81,7 +185,7 @@ onMounted(async () => {
   wfsLayers.value = layerService.getLayerDisplayNames()
 
   // Intentar obtener mapService con reintentos
-  const checkMapService = () => {
+  const checkMapService = async () => {
     if (window.mapService) {
       mapService = window.mapService
       baseLayers.value = mapService.getBaseLayers()
@@ -89,6 +193,9 @@ onMounted(async () => {
       selectedBaseLayer.value = mapService.getCurrentBaseLayerId()
       console.log('MapService conectado, capas base cargadas:', baseLayers.value)
       console.log('Capas WFS cargadas:', wfsLayerGroups.value)
+
+      // Cargar capas por defecto una vez que mapService esté disponible
+      await loadDefaultLayers()
     } else {
       // Reintentar después de un breve delay
       setTimeout(checkMapService, 100)
@@ -195,7 +302,7 @@ onUnmounted(() => {
                 type="checkbox"
                 :class="getLayerColorClass(layerId)"
                 :checked="store.selectedLayers.has(layerId)"
-                @change="store.toggleLayer(layerId)"
+                @change="handleLayerToggle(layerId)"
               >
               <div class="flex items-center space-x-2">
                 <div :class="getLayerIndicatorClass(layerId)"></div>
@@ -230,29 +337,9 @@ onUnmounted(() => {
 
     <!-- Footer -->
     <footer class="bg-geo-dark p-4 mt-auto dark:bg-geo-dark/50">
-      <div class="flex flex-col items-center space-y-3">
         <div class="flex items-center space-x-2">
           <p class="text-sm text-geo-text/80">© 2024 GeoCanoabo - Powered by Gira360</p>
         </div>
-        <div class="flex items-center space-x-2">
-          <i class="fab fa-leaflet text-geo-primary"></i>
-          <span class="text-sm text-geo-text/80">Leaflet</span>
-        </div>
-        <div class="flex flex-wrap justify-center gap-x-4 gap-y-2">
-          <button class="text-sm text-geo-text/80 hover:text-geo-primary transition-colors">
-            <i class="fas fa-download mr-1"></i>
-            Descargar datos
-          </button>
-          <button class="text-sm text-geo-text/80 hover:text-geo-primary transition-colors">
-            <i class="fas fa-share-alt mr-1"></i>
-            Compartir
-          </button>
-          <button class="text-sm text-geo-text/80 hover:text-geo-primary transition-colors">
-            <i class="fas fa-question-circle mr-1"></i>
-            Ayuda
-          </button>
-        </div>
-      </div>
     </footer>
   </div>
 </template>

@@ -3,7 +3,8 @@ import { ref } from 'vue'
 import { layerService } from '@/services/layerService'
 
 export const useLayerStore = defineStore('layer', () => {
-  const selectedLayers = ref(new Set())
+  // Inicializar con capas por defecto activas
+  const selectedLayers = ref(new Set(['suelos-wfs', 'perimetro-wfs']))
   const activeContextMenu = ref(null)
   const attributePanelVisible = ref(false)
   const currentLayerId = ref(null)

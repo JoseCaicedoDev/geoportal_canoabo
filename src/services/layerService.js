@@ -1,3 +1,10 @@
+import {
+  GEOSERVER_WFS_SUELO_URL,
+  GEOSERVER_WFS_RIOS_URL,
+  GEOSERVER_WFS_PERIMETRO_URL,
+  GEOSERVER_WFS_EMBALSE_URL
+} from '../urls.js'
+
 // Configuración de capas
 const layerGroups = {
   'hydrology': {
@@ -27,7 +34,7 @@ const layerDisplayNames = {
 const layerConfigs = {
   'suelos-wfs': {
     type: 'wfs',
-    url: 'https://geoserver.gira360.com/geoserver/canoabo/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=canoabo:pg_Suelo8_ur&outputFormat=application/json&srsName=EPSG:4326',
+    url: GEOSERVER_WFS_SUELO_URL,
     style: {
       color: '#d97706',
       weight: 2,
@@ -38,7 +45,7 @@ const layerConfigs = {
   },
   'rios-wfs': {
     type: 'wfs',
-    url: 'https://geoserver.gira360.com/geoserver/canoabo/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=canoabo:pg_rios_ur&outputFormat=application/json&srsName=EPSG:4326',
+    url: GEOSERVER_WFS_RIOS_URL,
     style: {
       color: '#0538ff',
       weight: 3,
@@ -49,28 +56,24 @@ const layerConfigs = {
   },
   'embalse-wfs': {
     type: 'wfs',
-    url: 'https://geoserver.gira360.com/geoserver/canoabo/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=canoabo:pg_embalse_ur&outputFormat=application/json&maxFeatures=50',
+    url: GEOSERVER_WFS_EMBALSE_URL,
     style: {
-      color: '#0284c7',
-      fillColor: '#0ea5e9',
+      color: '#0538ff',
       weight: 2,
-      opacity: 0.9,
+      opacity: 1,
       fillOpacity: 0.6,
-      lineCap: 'round',
-      lineJoin: 'round'
+      fillColor: '#3b82f6'
     }
   },
   'perimetro-wfs': {
     type: 'wfs',
-    url: 'https://geoserver.gira360.com/geoserver/canoabo/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=canoabo:pg_perimetro&outputFormat=application/json&maxFeatures=50',
+    url: GEOSERVER_WFS_PERIMETRO_URL,
     style: {
       color: '#dc2626',
-      fillColor: '#dc2626',
       weight: 2,
-      opacity: 0.8,
+      opacity: 1,
       fillOpacity: 0.1,
-      lineCap: 'round',
-      lineJoin: 'round'
+      fillColor: 'transparent'
     }
   }
 }
