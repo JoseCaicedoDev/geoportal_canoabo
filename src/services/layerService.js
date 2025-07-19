@@ -3,17 +3,22 @@ const layerGroups = {
   'hydrology': {
     name: 'Hidrología',
     color: 'blue-500',
-    layers: ['rio-canoabo', 'afluentes', 'cuenca']
+    layers: ['rio-canoabo', 'afluentes', 'cuenca', 'rios-wfs', 'embalse-wfs']
   },
   'geology': {
     name: 'Geología',
     color: 'amber-500',
-    layers: ['formaciones', 'suelos']
+    layers: ['formaciones', 'suelos', 'suelos-wfs']
   },
   'settlements': {
     name: 'Asentamientos',
     color: 'red-500',
     layers: ['centros-poblados', 'vias']
+  },
+  'boundaries': {
+    name: 'Límites',
+    color: 'red-600',
+    layers: ['perimetro-wfs']
   }
 }
 
@@ -21,10 +26,65 @@ const layerDisplayNames = {
   'rio-canoabo': 'Río Canoabo',
   'afluentes': 'Afluentes',
   'cuenca': 'Cuenca',
+  'rios-wfs': 'Ríos Canoabo (WFS)',
+  'embalse-wfs': 'Embalses Canoabo (WFS)',
   'formaciones': 'Formaciones Rocosas',
   'suelos': 'Tipos de Suelo',
+  'suelos-wfs': 'Suelos Canoabo (WFS)',
   'centros-poblados': 'Centros Poblados',
-  'vias': 'Vías'
+  'vias': 'Vías',
+  'perimetro-wfs': 'Perímetro Canoabo (WFS)'
+}
+
+const layerConfigs = {
+  'suelos-wfs': {
+    type: 'wfs',
+    url: 'https://geoserver.gira360.com/geoserver/canoabo/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=canoabo:pg_Suelo8_ur&outputFormat=application/json&srsName=EPSG:4326',
+    style: {
+      color: '#d97706',
+      weight: 2,
+      opacity: 0.8,
+      fillOpacity: 0.4,
+      fillColor: '#f59e0b'
+    }
+  },
+  'rios-wfs': {
+    type: 'wfs',
+    url: 'https://geoserver.gira360.com/geoserver/canoabo/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=canoabo:pg_rios_ur&outputFormat=application/json&srsName=EPSG:4326',
+    style: {
+      color: '#0538ff',
+      weight: 3,
+      opacity: 1,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }
+  },
+  'embalse-wfs': {
+    type: 'wfs',
+    url: 'https://geoserver.gira360.com/geoserver/canoabo/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=canoabo:pg_embalse_ur&outputFormat=application/json&maxFeatures=50',
+    style: {
+      color: '#0284c7',
+      fillColor: '#0ea5e9',
+      weight: 2,
+      opacity: 0.9,
+      fillOpacity: 0.6,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }
+  },
+  'perimetro-wfs': {
+    type: 'wfs',
+    url: 'https://geoserver.gira360.com/geoserver/canoabo/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=canoabo:pg_perimetro&outputFormat=application/json&maxFeatures=50',
+    style: {
+      color: '#dc2626',
+      fillColor: '#dc2626',
+      weight: 2,
+      opacity: 0.8,
+      fillOpacity: 0.1,
+      lineCap: 'round',
+      lineJoin: 'round'
+    }
+  }
 }
 
 const layerStyles = {
@@ -32,19 +92,25 @@ const layerStyles = {
     'rio-canoabo': { color: 'blue-500' },
     'afluentes': { color: 'blue-400' },
     'cuenca': { color: 'blue-300' },
+    'rios-wfs': { color: 'blue-600' },
+    'embalse-wfs': { color: 'sky-500' },
     'formaciones': { color: 'yellow-700' },
     'suelos': { color: 'amber-500' },
     'centros-poblados': { color: 'red-500' },
-    'vias': { color: 'gray-600' }
+    'vias': { color: 'gray-600' },
+    'perimetro-wfs': { color: 'red-600' }
   },
   dark: {
     'rio-canoabo': { color: 'blue-400' },
     'afluentes': { color: 'blue-300' },
     'cuenca': { color: 'blue-200' },
+    'rios-wfs': { color: 'blue-400' },
+    'embalse-wfs': { color: 'sky-400' },
     'formaciones': { color: 'yellow-600' },
     'suelos': { color: 'amber-400' },
     'centros-poblados': { color: 'red-400' },
-    'vias': { color: 'gray-400' }
+    'vias': { color: 'gray-400' },
+    'perimetro-wfs': { color: 'red-500' }
   }
 }
 
@@ -90,6 +156,12 @@ const layerSampleData = {
     { id: 'VIA002', nombre: 'Vía Local Norte', tipo: 'Carretera', longitud: '18.5', estado: 'Regular', material: 'Asfalto' },
     { id: 'VIA003', nombre: 'Camino Rural Sur', tipo: 'Camino rural', longitud: '12.3', estado: 'Malo', material: 'Tierra' },
     { id: 'VIA004', nombre: 'Calle Principal Canoabo', tipo: 'Calle urbana', longitud: '3.2', estado: 'Bueno', material: 'Concreto' }
+  ],
+  'suelos-wfs': [
+    { id: 'SWFS001', nombre: 'Suelo Tipo A', tipo: 'Suelo agrícola', area: '45.2', ph: '6.8', clasificacion: 'Entisol', fuente: 'WFS GeoServer' },
+    { id: 'SWFS002', nombre: 'Suelo Tipo B', tipo: 'Suelo forestal', area: '32.1', ph: '5.9', clasificacion: 'Ultisol', fuente: 'WFS GeoServer' },
+    { id: 'SWFS003', nombre: 'Suelo Tipo C', tipo: 'Suelo mixto', area: '28.7', ph: '6.2', clasificacion: 'Alfisol', fuente: 'WFS GeoServer' },
+    { id: 'SWFS004', nombre: 'Suelo Tipo D', tipo: 'Suelo urbano', area: '15.3', ph: '7.1', clasificacion: 'Anthropic', fuente: 'WFS GeoServer' }
   ]
 }
 
@@ -102,12 +174,54 @@ export const layerService = {
     return layerDisplayNames[layerId] || layerId
   },
 
+  getLayerConfig(layerId) {
+    return layerConfigs[layerId] || null
+  },
+
   getLayerStyle(layerId, isDark = false) {
     const theme = isDark ? layerStyles.dark : layerStyles.light
     return theme[layerId] || { color: isDark ? 'gray-400' : 'gray-500' }
   },
 
+  async getWFSData(layerId) {
+    const config = this.getLayerConfig(layerId)
+    if (!config || config.type !== 'wfs') return []
+
+    try {
+      const response = await fetch(config.url)
+      if (!response.ok) {
+        console.error('Error fetching WFS data:', response.status)
+        return []
+      }
+
+      const geojson = await response.json()
+
+      // Convertir GeoJSON features a formato de tabla
+      return geojson.features.map((feature, index) => {
+        const props = feature.properties
+        return {
+          id: props.id || props.gml_id || `feature_${index}`,
+          nombre: props.nombre || props.h1_text || 'Sin nombre',
+          tipo: props.tipo || 'Suelo',
+          area: props.area || 'N/A',
+          ph: props.ph || 'N/A',
+          clasificacion: props.clasificacion || props.h1_text || 'N/A',
+          fuente: 'WFS GeoServer',
+          ...props // Incluir todas las propiedades originales
+        }
+      })
+    } catch (error) {
+      console.error('Error getting WFS data:', error)
+      return []
+    }
+  },
+
   getLayerData(layerId) {
+    // Si es una capa WFS, intentar obtener datos dinámicamente
+    if (layerId === 'suelos-wfs') {
+      // Por ahora devolver datos estáticos, pero podríamos hacer esto dinámico
+      return layerSampleData[layerId] || []
+    }
     return layerSampleData[layerId] || []
   },
 
@@ -171,6 +285,15 @@ export const layerService = {
         { key: 'longitud', label: 'Longitud (km)', sortable: true, type: 'number' },
         { key: 'estado', label: 'Estado', sortable: true, type: 'string' },
         { key: 'material', label: 'Material', sortable: true, type: 'string' }
+      ],
+      'suelos-wfs': [
+        { key: 'id', label: 'ID', sortable: true, type: 'string' },
+        { key: 'nombre', label: 'Nombre', sortable: true, type: 'string' },
+        { key: 'tipo', label: 'Tipo', sortable: true, type: 'string' },
+        { key: 'area', label: 'Área (km²)', sortable: true, type: 'number' },
+        { key: 'ph', label: 'pH', sortable: true, type: 'number' },
+        { key: 'clasificacion', label: 'Clasificación', sortable: true, type: 'string' },
+        { key: 'fuente', label: 'Fuente', sortable: true, type: 'string' }
       ]
     }
 

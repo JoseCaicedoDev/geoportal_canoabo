@@ -263,6 +263,26 @@ onUnmounted(() => {
                 </div>
               </div>
 
+              <div class="flex items-center justify-between group">
+                <label class="flex items-center space-x-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    class="text-geo-accent focus:ring-geo-accent"
+                    :checked="store.selectedLayers.has('suelos-wfs')"
+                    @change="store.toggleLayer('suelos-wfs')"
+                  >
+                  <span class="text-sm text-geo-text">Suelos Canoabo (WFS)</span>
+                </label>
+                <div class="relative">
+                  <button
+                    class="opacity-0 group-hover:opacity-100 text-geo-text/60 hover:text-geo-text transition-all"
+                    @click="showContextMenu($event, 'suelos-wfs')"
+                  >
+                    <i class="fas fa-ellipsis-v text-xs"></i>
+                  </button>
+                </div>
+              </div>
+
               <!-- Leyenda de Geología -->
               <div class="mt-3 pt-3 border-t border-geo-border">
                 <div class="space-y-1 text-sm">
@@ -273,6 +293,10 @@ onUnmounted(() => {
                   <div class="flex items-center space-x-2">
                     <div class="w-4 h-4 bg-yellow-700 rounded-full"></div>
                     <span class="text-geo-text/70">Formaciones Rocosas</span>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <div class="w-4 h-4 bg-orange-500 rounded-full"></div>
+                    <span class="text-geo-text/70">Suelos WFS</span>
                   </div>
                 </div>
               </div>
