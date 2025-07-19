@@ -14,7 +14,7 @@ const scale = ref('1:140,000')
 const mapRef = ref(null)
 
 // Configuración inicial del mapa (Región de Canoabo, Carabobo, Venezuela)
-const INITIAL_CENTER = [10.1833, -68.2833] // Coordenadas aproximadas de Canoabo
+const INITIAL_CENTER = [10.3316, -68.2833] // Coordenadas aproximadas de Canoabo
 const INITIAL_ZOOM = 12
 
 const updateCoordinates = (event) => {
@@ -477,48 +477,6 @@ const initializeMap = async () => {
 
   // Actualizar escala inicial
   updateScale()
-
-  // Agregar un marcador de ejemplo en Canoabo
-  const canoaboMarker = L.marker(INITIAL_CENTER)
-    .addTo(map)
-    .bindPopup('<b>Canoabo</b><br>Cuenca del Río Canoabo<br>Estado Carabobo, Venezuela')
-
-  // Ejemplo de polígono para mostrar la cuenca (aproximado)
-  const cuencaPolygon = L.polygon([
-    [10.220, -68.320],
-    [10.180, -68.280],
-    [10.160, -68.250],
-    [10.150, -68.220],
-    [10.170, -68.200],
-    [10.200, -68.210],
-    [10.230, -68.240],
-    [10.240, -68.280],
-    [10.220, -68.320]
-  ], {
-    color: '#16a34a',
-    fillColor: '#16a34a',
-    fillOpacity: 0.2,
-    weight: 2
-  }).addTo(map)
-
-  cuencaPolygon.bindPopup('<b>Cuenca del Río Canoabo</b><br>Área aproximada de la cuenca hidrográfica')
-
-  // Agregar línea del río principal (ejemplo)
-  const rioPath = L.polyline([
-    [10.200, -68.300],
-    [10.190, -68.290],
-    [10.180, -68.275],
-    [10.175, -68.260],
-    [10.170, -68.245],
-    [10.165, -68.230],
-    [10.160, -68.220]
-  ], {
-    color: '#3b82f6',
-    weight: 3,
-    opacity: 0.8
-  }).addTo(map)
-
-  rioPath.bindPopup('<b>Río Canoabo</b><br>Curso principal del río')
 
   // Cargar capa WFS de suelos
   try {

@@ -5,16 +5,24 @@ class MapService {
     this.map = null
     this.layers = new Map()
     this.baseLayer = null
+    this.initialCenter = [10.1833, -68.2833] // Default Canoabo coordinates
+    this.initialZoom = 12 // Default zoom
   }
 
   initializeMap(containerId, options = {}) {
     const defaultOptions = {
-      center: [10.5, -67.8], // Coordenadas de Canoabo
-      zoom: 13,
+      center: [10.1833, -68.2833], // Coordenadas de Canoabo
+      zoom: 12,
       zoomControl: false // Desactivamos los controles por defecto
     }
 
-    this.map = L.map(containerId, { ...defaultOptions, ...options })
+    const finalOptions = { ...defaultOptions, ...options }
+    
+    // Store initial values for zoomToHome
+    this.initialCenter = finalOptions.center
+    this.initialZoom = finalOptions.zoom
+
+    this.map = L.map(containerId, finalOptions)
 
     // Añadir capas base
     this.initializeBaseLayers()
@@ -212,7 +220,7 @@ class MapService {
   }
 
   zoomToHome() {
-    this.map.setView([10.5, -67.8], 13)
+    this.map.setView(this.initialCenter, this.initialZoom)
   }
 
   toggleFullscreen() {
