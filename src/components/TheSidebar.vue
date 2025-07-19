@@ -99,6 +99,12 @@ const getLayerIcon = (layerId) => {
 const getLayerIconColor = (layerId) => {
   const group = getLayerGroup(layerId)
 
+  // Para la capa de suelos, usar colores según textura
+  if (layerId === 'suelos-wfs') {
+    // Mostrar un color representativo para suelos (ámbar)
+    return 'text-amber-600'
+  }
+
   switch (group?.color) {
     case 'blue-500':
       return 'text-blue-500'
@@ -109,6 +115,20 @@ const getLayerIconColor = (layerId) => {
     default:
       return 'text-geo-primary'
   }
+}
+
+// Nueva función para mostrar la leyenda de colores de textura
+const getTexturaColorIndicators = () => {
+  return [
+    { textura: 'a', color: '#2d2139', name: 'Arenoso' },
+    { textura: 'aF', color: '#7fa7c5', name: 'Areno Franco' },
+    { textura: 'F', color: '#3ecfc6', name: 'Franco' },
+    { textura: 'Fa', color: '#8eea70', name: 'Franco Arenoso' },
+    { textura: 'FA', color: '#c2e96a', name: 'Franco Arcilloso' },
+    { textura: 'FL', color: '#e3a23c', name: 'Franco Limoso' },
+    { textura: 'L', color: '#a34b0e', name: 'Limoso' },
+    { textura: 'A', color: '#e78a9b', name: 'Arcilloso' }
+  ]
 }
 
 // Manejar toggle de capas WFS con agregado/eliminación de GeoJSON
@@ -356,22 +376,39 @@ onUnmounted(() => {
             :key="layerId"
             class="relative group p-3 rounded-lg border border-geo-border/30 hover:bg-geo-hover hover:border-geo-border transition-all"
           >
-            <div class="flex items-center justify-between">
-              <label class="flex items-center space-x-3 cursor-pointer flex-1">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start space-x-3 flex-1">
                 <input
                   type="checkbox"
                   :class="getLayerColorClass(layerId)"
                   :checked="store.selectedLayers.has(layerId)"
                   @change="handleLayerToggle(layerId)"
+                  class="mt-0.5"
                 >
                 <div class="flex flex-col">
                   <span class="text-sm font-medium text-geo-text">{{ wfsLayers[layerId] || layerId }}</span>
-                  <!-- Ícono del tipo de geometría debajo del nombre -->
-                  <div class="mt-1">
+                  <!-- Ícono del tipo de geometría debajo del nombre (excepto para suelos) -->
+                  <div v-if="layerId !== 'suelos-wfs'" class="mt-1">
                     <i :class="[getLayerIcon(layerId), getLayerIconColor(layerId), 'text-xs']"></i>
                   </div>
+                  <!-- Leyenda de texturas para suelos en lugar del ícono -->
+                  <div v-if="layerId === 'suelos-wfs' && store.selectedLayers.has(layerId)" class="mt-2">
+                    <div class="space-y-1">
+                      <div
+                        v-for="textura in getTexturaColorIndicators()"
+                        :key="textura.textura"
+                        class="flex items-center space-x-2"
+                      >
+                        <div
+                          class="w-2.5 h-2.5 rounded-full border border-gray-300 flex-shrink-0"
+                          :style="{ backgroundColor: textura.color }"
+                        ></div>
+                        <span class="text-xs text-geo-text/80">{{ textura.name }}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </label>
+              </div>
 
               <div class="flex items-center space-x-2">
                 <!-- Menú de opciones -->
@@ -384,7 +421,9 @@ onUnmounted(() => {
               </div>
             </div>
           </div>
-        </div>        <!-- Menú contextual -->
+        </div>
+
+        <!-- Menú contextual -->
         <LayerContextMenu
           v-if="store.activeContextMenu"
           :show="!!store.activeContextMenu"

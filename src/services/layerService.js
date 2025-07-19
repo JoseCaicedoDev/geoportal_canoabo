@@ -42,6 +42,16 @@ const layerConfigs = {
       opacity: 0.8,
       fillOpacity: 0.4,
       fillColor: '#f59e0b'
+    },
+    texturaColors: {
+      a: '#2d2139',
+      aF: '#7fa7c5',
+      F: '#3ecfc6',
+      Fa: '#8eea70',
+      FA: '#c2e96a',
+      FAa: '#e3a23c',
+      FL: '#a34b0e',
+      Si: '#2d1e1b'
     }
   },
   'rios-wfs': {
@@ -117,6 +127,14 @@ export const layerService = {
   getLayerGeometryType(layerId) {
     const config = layerConfigs[layerId]
     return config ? config.geometryType : 'Unknown'
+  },
+
+  getTexturaColor(layerId, textura) {
+    const config = layerConfigs[layerId]
+    if (config && config.texturaColors && textura) {
+      return config.texturaColors[textura] || '#888888'
+    }
+    return '#888888'
   },
 
   getLayerStyle(layerId, isDark = false) {
