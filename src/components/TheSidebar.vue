@@ -1,13 +1,17 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useLayerStore } from '@/stores/layerStore'
 import LayerContextMenu from './LayerContextMenu.vue'
 
 const { isDarkMode } = useDarkMode()
 const store = useLayerStore()
-const selectedBaseLayer = ref('satellite')
+const selectedBaseLayer = ref('world-imagery')
 const openAccordions = ref(new Set())
+const baseLayers = ref({})
+
+// Importar mapService para manejar capas base
+let mapService = null
 
 const toggleAccordion = (id) => {
   if (openAccordions.value.has(id)) {
@@ -21,6 +25,18 @@ const showContextMenu = (event, layerId) => {
   store.showContextMenu(event, layerId)
 }
 
+// Cambiar capa base cuando el usuario selecciona una
+const handleBaseLayerChange = (layerId) => {
+  if (mapService && mapService.setBaseLayer) {
+    mapService.setBaseLayer(layerId)
+  }
+}
+
+// Watch para detectar cambios en la capa base seleccionada
+watch(selectedBaseLayer, (newLayerId) => {
+  handleBaseLayerChange(newLayerId)
+})
+
 // Ocultar menú contextual al hacer clic fuera o al cambiar de ventana
 const handleClickOutside = (event) => {
   if (!event.target.closest('.context-menu')) {
@@ -28,9 +44,25 @@ const handleClickOutside = (event) => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleClickOutside)
   window.addEventListener('blur', store.hideContextMenu)
+
+  // Intentar obtener mapService con reintentos
+  const checkMapService = () => {
+    if (window.mapService) {
+      mapService = window.mapService
+      baseLayers.value = mapService.getBaseLayers()
+      // Sincronizar con la capa base actual
+      selectedBaseLayer.value = mapService.getCurrentBaseLayerId()
+      console.log('MapService conectado, capas base cargadas:', baseLayers.value)
+    } else {
+      // Reintentar después de un breve delay
+      setTimeout(checkMapService, 100)
+    }
+  }
+
+  checkMapService()
 })
 
 onUnmounted(() => {
@@ -66,35 +98,19 @@ onUnmounted(() => {
           Capas Base
         </h3>
         <div class="space-y-2">
-          <label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-geo-hover cursor-pointer">
+          <label
+            v-for="(layer, layerId) in baseLayers"
+            :key="layerId"
+            class="flex items-center space-x-3 p-2 rounded-lg hover:bg-geo-hover cursor-pointer"
+          >
             <input
               type="radio"
               name="baseLayer"
-              value="satellite"
+              :value="layerId"
               v-model="selectedBaseLayer"
               class="text-geo-primary focus:ring-geo-primary"
             >
-            <span class="text-sm text-geo-text">Satélite</span>
-          </label>
-          <label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-geo-hover cursor-pointer">
-            <input
-              type="radio"
-              name="baseLayer"
-              value="topographic"
-              v-model="selectedBaseLayer"
-              class="text-geo-primary focus:ring-geo-primary"
-            >
-            <span class="text-sm text-geo-text">Topográfico</span>
-          </label>
-          <label class="flex items-center space-x-3 p-2 rounded-lg hover:bg-geo-hover cursor-pointer">
-            <input
-              type="radio"
-              name="baseLayer"
-              value="streets"
-              v-model="selectedBaseLayer"
-              class="text-geo-primary focus:ring-geo-primary"
-            >
-            <span class="text-sm text-geo-text">Calles</span>
+            <span class="text-sm text-geo-text">{{ layer.name }}</span>
           </label>
         </div>
       </div>

@@ -573,6 +573,8 @@ const initializeMap = async () => {
 
 onMounted(() => {
   initializeMap()
+  // Exponer mapService globalmente para que otros componentes puedan acceder
+  window.mapService = mapService
 })
 
 // Watcher para manejar el toggle de capas

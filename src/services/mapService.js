@@ -1,10 +1,25 @@
 import L from 'leaflet'
+import {
+  ESRI_WORLD_IMAGERY_URL,
+  ESRI_WORLD_STREET_URL,
+  ESRI_WORLD_TOPO_URL,
+  ESRI_WORLD_GRAYSCALE_URL,
+  OSM_TILE_URL,
+  OPENTOPOMAP_URL,
+  ESRI_IMAGERY_ATTRIBUTION,
+  ESRI_STREET_ATTRIBUTION,
+  ESRI_TOPO_ATTRIBUTION,
+  ESRI_GRAYSCALE_ATTRIBUTION,
+  OSM_ATTRIBUTION,
+  OPENTOPOMAP_ATTRIBUTION
+} from '../urls.js'
 
 class MapService {
   constructor() {
     this.map = null
     this.layers = new Map()
     this.baseLayer = null
+    this.currentBaseLayerId = 'world-imagery' // Track current base layer
     this.initialCenter = [10.1833, -68.2833] // Default Canoabo coordinates
     this.initialZoom = 12 // Default zoom
   }
@@ -17,7 +32,7 @@ class MapService {
     }
 
     const finalOptions = { ...defaultOptions, ...options }
-    
+
     // Store initial values for zoomToHome
     this.initialCenter = finalOptions.center
     this.initialZoom = finalOptions.zoom
@@ -32,19 +47,34 @@ class MapService {
 
   initializeBaseLayers() {
     const baseLayers = {
-      'satellite': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+      'world-imagery': L.tileLayer(ESRI_WORLD_IMAGERY_URL, {
+        attribution: ESRI_IMAGERY_ATTRIBUTION,
+        maxZoom: 19
       }),
-      'streets': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+      'world-street': L.tileLayer(ESRI_WORLD_STREET_URL, {
+        attribution: ESRI_STREET_ATTRIBUTION,
+        maxZoom: 19
       }),
-      'topographic': L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenTopoMap contributors'
+      'world-topo': L.tileLayer(ESRI_WORLD_TOPO_URL, {
+        attribution: ESRI_TOPO_ATTRIBUTION,
+        maxZoom: 19
+      }),
+      'world-grayscale': L.tileLayer(ESRI_WORLD_GRAYSCALE_URL, {
+        attribution: ESRI_GRAYSCALE_ATTRIBUTION,
+        maxZoom: 16
+      }),
+      'openstreetmap': L.tileLayer(OSM_TILE_URL, {
+        attribution: OSM_ATTRIBUTION,
+        maxZoom: 19
+      }),
+      'opentopomap': L.tileLayer(OPENTOPOMAP_URL, {
+        attribution: OPENTOPOMAP_ATTRIBUTION,
+        maxZoom: 17
       })
     }
 
     this.baseLayers = baseLayers
-    this.setBaseLayer('satellite') // Capa por defecto
+    this.setBaseLayer('world-imagery') // Capa por defecto
   }
 
   setBaseLayer(layerId) {
@@ -53,7 +83,23 @@ class MapService {
     }
 
     this.baseLayer = this.baseLayers[layerId]
+    this.currentBaseLayerId = layerId // Update current layer ID
     this.map.addLayer(this.baseLayer)
+  }
+
+  getCurrentBaseLayerId() {
+    return this.currentBaseLayerId
+  }
+
+  getBaseLayers() {
+    return {
+      'world-imagery': { name: 'Satélite', id: 'world-imagery' },
+      'world-street': { name: 'Calles', id: 'world-street' },
+      'world-topo': { name: 'Topográfico', id: 'world-topo' },
+      'world-grayscale': { name: 'Escala de Grises', id: 'world-grayscale' },
+      'openstreetmap': { name: 'OpenStreetMap', id: 'openstreetmap' },
+      'opentopomap': { name: 'OpenTopoMap', id: 'opentopomap' }
+    }
   }
 
   async addWFSLayer(layerId, url, options = {}) {
@@ -156,7 +202,9 @@ class MapService {
       console.error(`Error loading WFS layer ${layerId}:`, error)
       throw error
     }
-  } addLayer(layerId) {
+  }
+
+  addLayer(layerId) {
     const layer = this.layers.get(layerId)
     if (layer && this.map) {
       layer.addTo(this.map)
