@@ -85,13 +85,10 @@ async function getGeoJSONData(url) {
 
     const geoJSONData = await response.json();
 
-    // Para archivos locales en data/, reproyectar de EPSG:2202 a EPSG:4326
-    if (url.includes('/data/')) {
-      console.log('Reproyectando datos locales de EPSG:2202 a EPSG:4326');
-      return reprojectGeoJSON(geoJSONData, "EPSG:2202", "EPSG:4326");
-    }
-
+    // Los archivos GeoJSON locales ya están en WGS84 (EPSG:4326), no necesitan reproyección
+    console.log('GeoJSON loaded successfully, already in WGS84 format');
     return geoJSONData;
+
   } catch (error) {
     console.error('Error obteniendo datos GeoJSON:', error);
     console.error('Error loading local GeoJSON file:', url);
@@ -401,12 +398,18 @@ export const layerService = {
       if (feature && feature.geometry) {
         // Extract coordinates from geometry
         if (feature.geometry.type === 'Point') {
+          // Coordenadas en formato [longitude, latitude] - ya están en WGS84
+          const [lng, lat] = feature.geometry.coordinates
           coordinates = {
-            lat: feature.geometry.coordinates[1],
-            lng: feature.geometry.coordinates[0]
+            lat: lat,
+            lng: lng
           }
+          console.log('Feature coordinates extracted:', coordinates, 'for feature ID:', featureId)
         }
+      } else {
+        console.warn('Feature not found or missing geometry for ID:', featureId)
       }
+      
       // Select and zoom to feature on map
       return mapService.selectFeature(layerId, featureId, coordinates)
     } catch (error) {
