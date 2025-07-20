@@ -1,0 +1,93 @@
+{
+  "app": {
+    "title": "GeoCanoabo",
+    "subtitle": "Territory in Data"
+  },
+  "header": {
+    "darkModeToggle": "Switch to dark mode",
+    "lightModeToggle": "Switch to light mode"
+  },
+  "sidebar": {
+    "tabs": {
+      "layers": "Layers",
+      "analysis": "Analysis",
+      "info": "Info"
+    },
+    "baseLayers": "Base Layers",
+    "dataLayers": "Data Layers",
+    "analysis": {
+      "title": "Analysis tools coming soon"
+    },
+    "info": {
+      "title": "Project information coming soon"
+    }
+  },
+  "layers": {
+    "baseMap": "Basemap",
+    "layers": "Layers",
+    "soilTypes": {
+      "title": "Soil",
+      "arenoso": "Sandy",
+      "arenoFranco": "Sandy Franco",
+      "franco": "Franco",
+      "francoArenoso": "Franco Sandy",
+      "francoArcilloso": "Franco Clay",
+      "francoLimoso": "Franco Silty",
+      "limoso": "Silty",
+      "arcilloso": "Clay"
+    },
+    "rivers": "Rivers",
+    "embankments": "Embankments",
+    "perimeter": "Perimeter"
+  },
+  "attributes": {
+    "title": "Attribute Table",
+    "loading": "Loading attributes...",
+    "noData": "No data to display",
+    "search": "Search in attributes...",
+    "show": "Show:",
+    "recordsFound": "records found | record found | records found",
+    "noResultsFound": "No results found",
+    "records": "record | records",
+    "showing": "Showing {count} records",
+    "selected": "selected",
+    "clearSelection": "Clear selection",
+    "exportSelected": "Export selection ({count})",
+    "exportAll": "Export all ({count})",
+    "exportFiltered": "Export filtered ({count})",
+    "refresh": "Refresh data",
+    "refreshing": "Updating data...",
+    "lastRefresh": "Last update: {time}",
+    "source": "Source: WFS GeoServer Service"
+  },
+  "map": {
+    "scale": "Scale",
+    "coordinates": "Coordinates"
+  },
+  "modal": {
+    "close": "Close",
+    "layerDetails": "Layer Details",
+    "properties": "Properties",
+    "actions": "Actions"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "export": "Export",
+    "import": "Import",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "ascending": "Ascending",
+    "descending": "Descending",
+    "yes": "Yes",
+    "no": "No",
+    "language": "Language"
+  }
+}

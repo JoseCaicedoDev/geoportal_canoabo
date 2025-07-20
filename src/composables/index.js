@@ -6,6 +6,8 @@ export { useMapConfig } from './useMapConfig'
 
 // Re-export de otros composables relacionados
 export { useDarkMode } from './useDarkMode'
+export { useLanguage } from './useLanguage'
+export { useI18nSync } from './useI18nSync'
 export { useAccordion } from './useAccordion'
 export { useContextMenu } from './useContextMenu'
 

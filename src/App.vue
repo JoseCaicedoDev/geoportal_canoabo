@@ -1,14 +1,22 @@
 <script setup>
+import { onMounted } from 'vue'
 import TheHeader from '@/components/TheHeader.vue'
 import TheSidebar from '@/components/TheSidebar.vue'
 import TheMap from '@/components/TheMap.vue'
 import AttributePanel from '@/components/AttributePanel.vue'
 import LayerDetailsModal from '@/components/LayerDetailsModal.vue'
 import { useLayerStore } from '@/stores/layerStore'
+import { useI18nSync } from '@/composables/useI18nSync'
 import { storeToRefs } from 'pinia'
 
 const layerStore = useLayerStore()
 const { layerDetailsModalVisible, currentLayerDetails } = storeToRefs(layerStore)
+const { switchLanguage } = useI18nSync()
+
+// Inicializar idioma cuando la app se monta
+onMounted(() => {
+  // La inicialización del idioma se maneja automáticamente por el router y el composable
+})
 </script>
 
 <template>

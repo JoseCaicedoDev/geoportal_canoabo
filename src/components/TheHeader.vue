@@ -1,17 +1,16 @@
 <script setup>
 import { ref } from 'vue'
 import { useDarkMode } from '@/composables/useDarkMode'
+import { useLanguage } from '@/composables/useLanguage'
 
 // Importamos el composable de dark mode
 const { isDarkMode, toggleDarkMode } = useDarkMode()
 
-// Estado para el idioma
-const currentLanguage = ref('ES')
+// Importamos el composable de idioma y inicializamos
+const { initializeLanguage } = useLanguage()
 
-const changeLanguage = (lang) => {
-  currentLanguage.value = lang
-  // Aquí implementaremos la lógica para cambiar el idioma
-}
+// Inicializar el idioma cuando el componente se monta
+initializeLanguage()
 </script>
 
 <template>
@@ -23,34 +22,13 @@ const changeLanguage = (lang) => {
             <i class="fas fa-globe text-white text-sm"></i>
           </div>
           <div>
-            <h1 class="text-xl font-bold text-geo-text">GeoCanoabo</h1>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Territorio en Datos</p>
+            <h1 class="text-xl font-bold text-geo-text">{{ $t('app.title') }}</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('app.subtitle') }}</p>
           </div>
         </div>
       </div>
 
       <div class="flex items-center space-x-4">
-        <div class="flex items-center space-x-2">
-          <button
-            :class="[
-              'px-3 py-1 text-sm rounded-md transition-colors',
-              currentLanguage === 'ES'
-                ? 'bg-geo-primary text-white hover:bg-green-600'
-                : 'bg-geo-hover text-geo-text hover:bg-geo-hover/80'
-            ]"
-            @click="changeLanguage('ES')"
-          >ES</button>
-          <button
-            :class="[
-              'px-3 py-1 text-sm rounded-md transition-colors',
-              currentLanguage === 'EN'
-                ? 'bg-geo-primary text-white hover:bg-green-600'
-                : 'bg-geo-hover text-geo-text hover:bg-geo-hover/80'
-            ]"
-            @click="changeLanguage('EN')"
-          >EN</button>
-        </div>
-
         <button
           class="p-2 rounded-lg hover:bg-geo-hover transition-colors text-geo-text"
           @click="toggleDarkMode"

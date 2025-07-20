@@ -1,0 +1,93 @@
+{
+  "app": {
+    "title": "GeoCanoabo",
+    "subtitle": "Territorio en Datos"
+  },
+  "header": {
+    "darkModeToggle": "Cambiar a modo oscuro",
+    "lightModeToggle": "Cambiar a modo claro"
+  },
+  "sidebar": {
+    "tabs": {
+      "layers": "Capas",
+      "analysis": "Análisis",
+      "info": "Info"
+    },
+    "baseLayers": "Capas Base",
+    "dataLayers": "Capas de Datos",
+    "analysis": {
+      "title": "Herramientas de análisis próximamente"
+    },
+    "info": {
+      "title": "Información del proyecto próximamente"
+    }
+  },
+  "layers": {
+    "baseMap": "Mapa Base",
+    "layers": "Capas",
+    "soilTypes": {
+      "title": "Suelo",
+      "arenoso": "Arenoso",
+      "arenoFranco": "Areno Franco",
+      "franco": "Franco",
+      "francoArenoso": "Franco Arenoso",
+      "francoArcilloso": "Franco Arcilloso",
+      "francoLimoso": "Franco Limoso",
+      "limoso": "Limoso",
+      "arcilloso": "Arcilloso"
+    },
+    "rivers": "Ríos",
+    "embankments": "Embalses",
+    "perimeter": "Perímetro"
+  },
+  "attributes": {
+    "title": "Tabla de Atributos",
+    "loading": "Cargando atributos...",
+    "noData": "No hay datos para mostrar",
+    "search": "Buscar en los atributos...",
+    "show": "Mostrar:",
+    "recordsFound": "registros encontrados | registro encontrado | registros encontrados",
+    "noResultsFound": "No se encontraron resultados",
+    "records": "registro | registros",
+    "showing": "Mostrando {count} registros",
+    "selected": "seleccionados",
+    "clearSelection": "Limpiar selección",
+    "exportSelected": "Exportar selección ({count})",
+    "exportAll": "Exportar todo ({count})",
+    "exportFiltered": "Exportar filtrados ({count})",
+    "refresh": "Actualizar datos",
+    "refreshing": "Actualizando datos...",
+    "lastRefresh": "Última actualización: {time}",
+    "source": "Fuente: Servicio WFS GeoServer"
+  },
+  "map": {
+    "scale": "Escala",
+    "coordinates": "Coordenadas"
+  },
+  "modal": {
+    "close": "Cerrar",
+    "layerDetails": "Detalles de Capa",
+    "properties": "Propiedades",
+    "actions": "Acciones"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "export": "Exportar",
+    "import": "Importar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "ascending": "Ascendente",
+    "descending": "Descendente",
+    "yes": "Sí",
+    "no": "No",
+    "language": "Idioma"
+  }
+}

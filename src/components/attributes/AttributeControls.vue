@@ -15,7 +15,7 @@
           :value="searchTerm"
           @input="$emit('search-change', $event.target.value)"
           type="text"
-          :placeholder="searchPlaceholder"
+          :placeholder="$t('attributes.search')"
           class="w-full px-3 py-2 text-sm bg-geo-background border border-geo-border rounded-md focus:ring-2 focus:ring-geo-primary focus:border-transparent text-geo-text placeholder-geo-text/60"
           :aria-describedby="searchTerm ? 'search-results' : undefined"
         >

@@ -12,7 +12,7 @@
       aria-live="polite"
     >
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-geo-primary"></div>
-      <span class="ml-3 text-geo-text">{{ loadingText }}</span>
+      <span class="ml-3 text-geo-text">{{ $t('attributes.loading') }}</span>
     </div>
 
     <!-- Empty State -->
@@ -22,7 +22,7 @@
       role="status"
       aria-live="polite"
     >
-      <p class="text-gray-600 dark:text-gray-400">{{ emptyText }}</p>
+      <p class="text-gray-600 dark:text-gray-400">{{ $t('attributes.noData') }}</p>
     </div>
 
     <!-- Data Table -->
