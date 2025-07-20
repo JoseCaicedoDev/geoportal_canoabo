@@ -24,7 +24,7 @@ const changeLanguage = (lang) => {
           </div>
           <div>
             <h1 class="text-xl font-bold text-geo-text">GeoCanoabo</h1>
-            <p class="text-sm text-geo-text/60">Territorio en Datos</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Territorio en Datos</p>
           </div>
         </div>
       </div>

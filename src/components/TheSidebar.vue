@@ -244,7 +244,7 @@ onUnmounted(() => {
 
       <!-- Analysis Tab Content -->
       <div v-show="activeTab === 'analysis'" class="p-3">
-        <div class="text-center text-geo-text/60 py-8">
+        <div class="text-center text-gray-600 dark:text-gray-400 py-8">
           <i class="fas fa-chart-bar text-4xl mb-4"></i>
           <p>Herramientas de análisis próximamente</p>
         </div>
@@ -252,7 +252,7 @@ onUnmounted(() => {
 
       <!-- Info Tab Content -->
       <div v-show="activeTab === 'info'" class="p-3">
-        <div class="text-center text-geo-text/60 py-8">
+        <div class="text-center text-gray-600 dark:text-gray-400 py-8">
           <i class="fas fa-info-circle text-4xl mb-4"></i>
           <p>Información del proyecto próximamente</p>
         </div>

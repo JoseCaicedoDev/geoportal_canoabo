@@ -22,7 +22,7 @@
       role="status"
       aria-live="polite"
     >
-      <p class="text-geo-text/60">{{ emptyText }}</p>
+      <p class="text-gray-600 dark:text-gray-400">{{ emptyText }}</p>
     </div>
 
     <!-- Data Table -->

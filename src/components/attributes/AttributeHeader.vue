@@ -44,7 +44,7 @@
 
       <button
         @click="$emit('close-panel')"
-        class="p-1 text-geo-text/60 hover:text-geo-text transition-colors"
+        class="p-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
         :aria-label="closeAriaLabel"
         type="button"
       >

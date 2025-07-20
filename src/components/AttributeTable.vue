@@ -72,7 +72,7 @@ const filteredData = computed(() => {
           Exportar
         </button>
         <button
-          class="p-1 text-geo-text/60 hover:text-geo-text transition-colors"
+          class="p-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
           @click="$emit('close')"
         >
           <i class="fas fa-times"></i>
@@ -80,32 +80,8 @@ const filteredData = computed(() => {
       </div>
     </div>
 
-    <!-- Controles de búsqueda -->
+    <!-- Tabla -->
     <div class="p-4">
-      <div class="mb-3 flex items-center space-x-4">
-        <div class="flex-1">
-          <input
-            v-model="searchTerm"
-            type="text"
-            placeholder="Buscar en los atributos..."
-            class="w-full px-3 py-2 text-sm bg-geo-background border border-geo-border rounded-md focus:ring-2 focus:ring-geo-primary focus:border-transparent text-geo-text placeholder-geo-text/60"
-          >
-        </div>
-        <div class="flex items-center space-x-2">
-          <span class="text-sm text-geo-text/60">Mostrar:</span>
-          <select
-            v-model="recordsPerPage"
-            class="text-sm bg-geo-background border border-geo-border rounded-md px-2 py-1 text-geo-text"
-          >
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Tabla -->
       <div class="bg-gray-50 rounded-lg overflow-hidden" style="height: 180px;">
         <div class="overflow-auto h-full">
           <table class="w-full text-sm">

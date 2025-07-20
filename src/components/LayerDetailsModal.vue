@@ -8,21 +8,21 @@
     @click="closeModal"
   >
     <div
-      class="bg-geo-background rounded-lg shadow-xl w-full max-w-md mx-4"
+      class="bg-white dark:bg-gray-900 rounded-lg shadow-xl w-full max-w-md mx-4"
       @click.stop
       role="document"
     >
       <!-- Header -->
-      <header class="flex items-center justify-between p-6 border-b border-geo-border">
+      <header class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
         <h2
           id="layer-details-title"
-          class="text-xl font-semibold text-geo-text"
+          class="text-xl font-semibold text-gray-900 dark:text-white"
         >
           Detalles de la Capa
         </h2>
         <button
           @click="closeModal"
-          class="p-1 text-geo-text/60 hover:text-geo-text transition-colors rounded-md hover:bg-geo-hover"
+          class="p-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
           type="button"
           aria-label="Cerrar modal de detalles"
         >
@@ -36,13 +36,13 @@
       <main class="p-6">
         <!-- Layer Name -->
         <div class="mb-6">
-          <h3 class="text-lg font-medium text-geo-text mb-2 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-geo-primary" fill="currentColor" viewBox="0 0 20 20">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2 flex items-center">
+            <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
             </svg>
             {{ layerName }}
           </h3>
-          <p class="text-sm text-geo-text/60">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
             ID: {{ layerId }}
           </p>
         </div>
@@ -60,24 +60,24 @@
             </svg>
           </div>
 
-          <h4 class="text-lg font-medium text-geo-text mb-2">
+          <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
             Sección en Construcción
           </h4>
 
-          <p class="text-geo-text/60 mb-4">
+          <p class="text-gray-600 dark:text-gray-400 mb-4">
             Los detalles completos de la capa estarán disponibles próximamente.
           </p>
 
-          <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
             <div class="flex items-start">
-              <svg class="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
               </svg>
               <div class="text-left">
-                <p class="text-sm font-medium text-yellow-800">
+                <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                   Funcionalidad en desarrollo
                 </p>
-                <p class="text-sm text-yellow-700 mt-1">
+                <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
                   Esta función incluirá información detallada sobre geometría, metadatos, estadísticas y configuración de la capa.
                 </p>
               </div>
@@ -87,10 +87,10 @@
       </main>
 
       <!-- Footer -->
-      <footer class="flex justify-end p-6 border-t border-geo-border bg-geo-hover/30">
+      <footer class="flex justify-end p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
         <button
           @click="closeModal"
-          class="px-4 py-2 bg-geo-primary text-white rounded-md hover:bg-geo-primary/90 transition-colors focus:ring-2 focus:ring-geo-primary focus:ring-offset-2"
+          class="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600 transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           type="button"
         >
           Cerrar

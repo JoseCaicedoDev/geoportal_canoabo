@@ -25,7 +25,7 @@
       <div class="flex items-center space-x-2">
         <label
           for="records-per-page"
-          class="text-sm text-geo-text/60"
+          class="text-sm text-gray-600 dark:text-gray-400"
         >
           Mostrar:
         </label>
