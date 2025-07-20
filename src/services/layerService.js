@@ -4,6 +4,8 @@ import {
   GEOSERVER_WFS_PERIMETRO_URL,
   GEOSERVER_WFS_EMBALSE_URL
 } from '../urls.js'
+import proj4 from 'proj4'
+import { reproject } from 'reproject'
 
 // Configuración de capas
 const layerGroups = {
@@ -24,6 +26,66 @@ const layerGroups = {
   }
 }
 
+// URLs de archivos locales como fallback
+const localFiles = {
+  'suelos-wfs': '/data/pg_Suelo8_ur.geojson',
+  'rios-wfs': '/data/rios_ur.geojson',
+  'embalse-wfs': '/data/pg_emblase_ur.geojson',
+  'perimetro-wfs': '/data/pg_perimetro.geojson'
+}
+
+/**
+ * Reproyecta un objeto GeoJSON del sistema de coordenadas origen al sistema de coordenadas destino
+ * @param {Object} geoJSON - Objeto GeoJSON a reproyectar
+ * @param {string} fromCRS - Sistema de coordenadas de origen (ej. "EPSG:2202")
+ * @param {string} toCRS - Sistema de coordenadas de destino (ej. "EPSG:4326")
+ * @returns {Object} - Objeto GeoJSON reproyectado
+ */
+function reprojectGeoJSON(geoJSON, fromCRS, toCRS = "EPSG:4326") {
+  if (!geoJSON) return null;
+
+  try {
+    // Definir el sistema de coordenadas EPSG:2202 (REGVEN UTM Zona 19)
+    if (fromCRS === "EPSG:2202") {
+      proj4.defs("EPSG:2202", "+proj=utm +zone=19 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+    }
+
+    // Realizar la reproyección
+    return reproject(geoJSON, fromCRS, toCRS);
+  } catch (error) {
+    console.error('Error al reproyectar GeoJSON:', error);
+    return geoJSON;  // Devolver el GeoJSON original en caso de error
+  }
+}
+
+/**
+ * Obtiene datos GeoJSON desde una URL o archivo local y los reproyecta si es necesario
+ * @param {string} url - URL o ruta al archivo GeoJSON
+ * @returns {Promise<Object|null>} - Objeto GeoJSON o null si hay error
+ */
+async function getGeoJSONData(url) {
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`Error al cargar los datos: ${response.status}`);
+    }
+
+    const geoJSONData = await response.json();
+
+    // Para archivos locales en data/, reproyectar de EPSG:2202 a EPSG:4326
+    if (url.includes('/data/')) {
+      console.log('Reproyectando datos locales de EPSG:2202 a EPSG:4326');
+      return reprojectGeoJSON(geoJSONData, "EPSG:2202", "EPSG:4326");
+    }
+
+    return geoJSONData;
+  } catch (error) {
+    console.error('Error obteniendo datos GeoJSON:', error);
+    return null;
+  }
+}
+
 const layerDisplayNames = {
   'rios-wfs': 'Ríos',
   'embalse-wfs': 'Embalse',
@@ -33,9 +95,9 @@ const layerDisplayNames = {
 
 const layerConfigs = {
   'suelos-wfs': {
-    type: 'wfs',
+    type: 'local',
     geometryType: 'Point',
-    url: GEOSERVER_WFS_SUELO_URL,
+    url: localFiles['suelos-wfs'],
     style: {
       color: '#d97706',
       weight: 2,
@@ -55,9 +117,9 @@ const layerConfigs = {
     }
   },
   'rios-wfs': {
-    type: 'wfs',
+    type: 'local',
     geometryType: 'LineString',
-    url: GEOSERVER_WFS_RIOS_URL,
+    url: localFiles['rios-wfs'],
     style: {
       color: '#0538ff',
       weight: 3,
@@ -67,9 +129,9 @@ const layerConfigs = {
     }
   },
   'embalse-wfs': {
-    type: 'wfs',
+    type: 'local',
     geometryType: 'Polygon',
-    url: GEOSERVER_WFS_EMBALSE_URL,
+    url: localFiles['embalse-wfs'],
     style: {
       color: '#0538ff',
       weight: 2,
@@ -79,9 +141,9 @@ const layerConfigs = {
     }
   },
   'perimetro-wfs': {
-    type: 'wfs',
+    type: 'local',
     geometryType: 'Polygon',
-    url: GEOSERVER_WFS_PERIMETRO_URL,
+    url: localFiles['perimetro-wfs'],
     style: {
       color: '#dc2626',
       weight: 2,
@@ -144,16 +206,27 @@ export const layerService = {
 
   async getWFSData(layerId) {
     const config = this.getLayerConfig(layerId)
-    if (!config || config.type !== 'wfs') return []
+    if (!config || (config.type !== 'wfs' && config.type !== 'local')) return []
 
     try {
-      const response = await fetch(config.url)
-      if (!response.ok) {
-        console.error('Error fetching WFS data:', response.status)
-        return []
+      let geojson;
+      
+      if (config.type === 'local') {
+        // Para archivos locales, usar la función getGeoJSONData
+        geojson = await getGeoJSONData(config.url)
+        if (!geojson) {
+          console.error('Error loading local GeoJSON file:', config.url)
+          return []
+        }
+      } else {
+        // Para capas WFS remotas (fallback)
+        const response = await fetch(config.url)
+        if (!response.ok) {
+          console.error('Error fetching WFS data:', response.status)
+          return []
+        }
+        geojson = await response.json()
       }
-
-      const geojson = await response.json()
 
       // Convertir GeoJSON features a formato de tabla
       const processedFeatures = geojson.features.map((feature, index) => {
@@ -192,7 +265,7 @@ export const layerService = {
 
       return processedFeatures
     } catch (error) {
-      console.error('Error getting WFS data:', error)
+      console.error('Error getting layer data:', error)
       return []
     }
   },

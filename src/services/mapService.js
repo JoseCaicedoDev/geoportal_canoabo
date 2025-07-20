@@ -109,14 +109,26 @@ class MapService {
       const { layerService } = await import('./layerService.js')
       const layerConfig = layerService.getLayerConfig(layerId)
 
-      const response = await fetch(url)
-
-      if (!response.ok) {
-        console.error('Error al obtener GeoJSON:', response.status, response.statusText)
-        throw new Error(`HTTP error! status: ${response.status}`)
+      let geojsonData;
+      
+      // Si la URL está usando archivos locales o es un archivo local, usar fetch directo
+      // De lo contrario, intentar obtener datos del layerService
+      if (url.includes('/data/') || layerConfig?.type === 'local') {
+        const response = await fetch(url)
+        if (!response.ok) {
+          console.error('Error al obtener GeoJSON:', response.status, response.statusText)
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        geojsonData = await response.json()
+      } else {
+        // Para URLs remotas, usar fetch directo
+        const response = await fetch(url)
+        if (!response.ok) {
+          console.error('Error al obtener GeoJSON:', response.status, response.statusText)
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        geojsonData = await response.json()
       }
-
-      const geojsonData = await response.json()
 
       if (!geojsonData || !geojsonData.features?.length) {
         console.warn('GeoJSON no contiene features.')
