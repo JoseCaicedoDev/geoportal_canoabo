@@ -1,4 +1,5 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import proj4 from 'proj4'
 
 // Definir las proyecciones
@@ -10,11 +11,19 @@ const utm19n = '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs' // EPSG:32619
  * Siguiendo principios de Clean Code Architecture y separación de responsabilidades
  */
 export function useMapEvents() {
-  const mapCoordinates = ref('Mueve el cursor sobre el mapa')
+  const { t } = useI18n()
+
+  const mapCoordinates = ref('')
   const scale = ref('1:140,000')
   const isFullscreen = ref(false)
 
-  /**
+  // Computed reactivo para el texto por defecto
+  const defaultCoordinatesText = computed(() => t('map.moveCursorPrompt'))
+
+  // Computed para mostrar coordenadas con fallback traducido
+  const displayCoordinates = computed(() => {
+    return mapCoordinates.value || defaultCoordinatesText.value
+  })  /**
    * Actualiza las coordenadas mostradas cuando el cursor se mueve sobre el mapa
    * Convierte de WGS84 (lat/lon) a UTM Zone 19N (EPSG:32619)
    * @param {Object} event - Evento de Leaflet con coordenadas
@@ -32,7 +41,7 @@ export function useMapEvents() {
         mapCoordinates.value = `X: ${formattedX}, Y: ${formattedY}`
       } catch (error) {
         console.error('Error al convertir coordenadas:', error)
-        mapCoordinates.value = 'Error en coordenadas'
+        mapCoordinates.value = t('map.coordinatesError')
       }
     }
   }

@@ -40,6 +40,13 @@
     "embankments": "Embalses",
     "perimeter": "Perímetro"
   },
+  "contextMenu": {
+    "viewDetails": "Ver detalles",
+    "viewAttributes": "Ver atributos",
+    "changeStyle": "Cambiar estilo",
+    "download": "Descargar",
+    "properties": "Propiedades"
+  },
   "attributes": {
     "title": "Tabla de Atributos",
     "loading": "Cargando atributos...",
@@ -58,17 +65,70 @@
     "refresh": "Actualizar datos",
     "refreshing": "Actualizando datos...",
     "lastRefresh": "Última actualización: {time}",
-    "source": "Fuente: Servicio WFS GeoServer"
+    "source": "Fuente: Servicio WFS GeoServer",
+    "total": "Total",
+    "filtered": "Filtrado",
+    "close": "Cerrar panel de atributos",
+    "export": "Exportar",
+    "exporting": "Exportando...",
+    "pagination": {
+      "showing": "Mostrando {start} - {end} de {total} registros",
+      "firstPage": "Ir a la primera página",
+      "previousPage": "Ir a la página anterior",
+      "nextPage": "Ir a la página siguiente",
+      "lastPage": "Ir a la última página",
+      "currentPage": "página actual",
+      "notAvailable": "no disponible"
+    },
+    "sort": {
+      "ascending": "Ordenar ascendente",
+      "descending": "Ordenar descendente"
+    },
+    "actions": {
+      "zoomTo": "Zoom a la característica",
+      "select": "Seleccionar fila"
+    },
+    "messages": {
+      "selectionCleared": "Selección limpiada",
+      "noDataSelected": "No hay datos seleccionados para exportar",
+      "exportError": "Error al exportar la selección",
+      "noDataToExport": "No hay datos para exportar",
+      "exportAllError": "Error al exportar los datos"
+    },
+    "clickToSelect": "Clic para seleccionar fila y elemento en el mapa",
+    "clickToDeselect": "Fila seleccionada - clic para deseleccionar",
+    "sortedAscending": "Ordenado ascendente",
+    "sortedDescending": "Ordenado descendente"
   },
   "map": {
     "scale": "Escala",
-    "coordinates": "Coordenadas"
+    "coordinates": "Coordenadas",
+    "scaleInfo": "Información de escala del mapa",
+    "coordinatesInfo": "Coordenadas del cursor",
+    "moveCursorPrompt": "Mueve el cursor sobre el mapa",
+    "coordinatesError": "Error en coordenadas",
+    "controls": {
+      "zoomIn": "Acercar",
+      "zoomOut": "Alejar",
+      "home": "Vista inicial",
+      "fullscreen": "Pantalla completa",
+      "exitFullscreen": "Salir de pantalla completa",
+      "zoomControls": "Controles de zoom",
+      "mapNavigation": "Navegación del mapa",
+      "mapView": "Vista del mapa"
+    }
   },
   "modal": {
     "close": "Cerrar",
-    "layerDetails": "Detalles de Capa",
+    "layerDetails": "Detalles de la Capa",
     "properties": "Propiedades",
-    "actions": "Acciones"
+    "actions": "Acciones",
+    "closeModal": "Cerrar modal de detalles",
+    "layerName": "Capa sin nombre",
+    "underConstruction": "Sección en Construcción",
+    "detailsAvailableSoon": "Los detalles completos de la capa estarán disponibles próximamente.",
+    "functionalityInDevelopment": "Funcionalidad en desarrollo",
+    "featureDescription": "Esta función incluirá información detallada sobre geometría, metadatos, estadísticas y configuración de la capa."
   },
   "common": {
     "loading": "Cargando...",

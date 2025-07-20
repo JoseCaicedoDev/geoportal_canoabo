@@ -1,5 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useLayerStore } from '@/stores/layerStore'
 import { layerService } from '@/services/layerService'
@@ -13,6 +14,7 @@ import LayerContextMenu from './LayerContextMenu.vue'
 
 const { isDarkMode } = useDarkMode()
 const store = useLayerStore()
+const { t } = useI18n()
 
 // Estado reactivo
 const activeTab = ref('layers')
@@ -22,11 +24,11 @@ const wfsLayerGroups = ref({})
 const wfsLayers = ref({})
 
 // Configuración de tabs
-const sidebarTabs = [
-  { id: 'layers', label: 'Capas', icon: 'fas fa-layer-group' },
-  { id: 'analysis', label: 'Análisis', icon: 'fas fa-chart-bar' },
-  { id: 'info', label: 'Info', icon: 'fas fa-info-circle' }
-]
+const sidebarTabs = computed(() => [
+  { id: 'layers', label: t('sidebar.tabs.layers'), icon: 'fas fa-layer-group' },
+  { id: 'analysis', label: t('sidebar.tabs.analysis'), icon: 'fas fa-chart-bar' },
+  { id: 'info', label: t('sidebar.tabs.info'), icon: 'fas fa-info-circle' }
+])
 
 // Importar mapService para manejar capas base
 let mapService = null
@@ -246,7 +248,7 @@ onUnmounted(() => {
       <div v-show="activeTab === 'analysis'" class="p-3">
         <div class="text-center text-gray-600 dark:text-gray-400 py-8">
           <i class="fas fa-chart-bar text-4xl mb-4"></i>
-          <p>Herramientas de análisis próximamente</p>
+          <p>{{ $t('sidebar.analysis.title') }}</p>
         </div>
       </div>
 
@@ -254,7 +256,7 @@ onUnmounted(() => {
       <div v-show="activeTab === 'info'" class="p-3">
         <div class="text-center text-gray-600 dark:text-gray-400 py-8">
           <i class="fas fa-info-circle text-4xl mb-4"></i>
-          <p>Información del proyecto próximamente</p>
+          <p>{{ $t('sidebar.info.title') }}</p>
         </div>
       </div>
     </main>

@@ -59,7 +59,7 @@
                 <span
                   v-if="sortBy === column.key"
                   class="ml-1"
-                  :aria-label="sortOrder === 'asc' ? 'Ordenado ascendente' : 'Ordenado descendente'"
+                  :aria-label="getSortAriaLabel"
                 >
                   {{ sortOrder === 'asc' ? '▲' : '▼' }}
                 </span>
@@ -87,7 +87,7 @@
             @keydown.enter="$emit('row-select', row, index)"
             @keydown.space.prevent="$emit('row-select', row, index)"
             :aria-selected="selectedRowIndex === index"
-            :title="selectedRowIndex === index ? 'Fila seleccionada - clic para deseleccionar' : 'Clic para seleccionar fila y elemento en el mapa'"
+            :title="getRowTitle(index)"
           >
             <td
               v-for="column in columns"
@@ -133,6 +133,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   attributes: {
@@ -218,6 +221,19 @@ const paginatedData = computed(() => {
   const start = (props.currentPage - 1) * props.recordsPerPage
   const end = start + props.recordsPerPage
   return sortedData.value.slice(start, end)
+})
+
+// Computed for tooltips
+const getRowTitle = computed(() => (index) => {
+  return props.selectedRowIndex === index
+    ? t('attributes.clickToDeselect')
+    : t('attributes.clickToSelect')
+})
+
+const getSortAriaLabel = computed(() => {
+  return props.sortOrder === 'asc'
+    ? t('attributes.sortedAscending')
+    : t('attributes.sortedDescending')
 })
 
 // Methods

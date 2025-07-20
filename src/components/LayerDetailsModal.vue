@@ -18,13 +18,13 @@
           id="layer-details-title"
           class="text-xl font-semibold text-gray-900 dark:text-white"
         >
-          Detalles de la Capa
+          {{ $t('modal.layerDetails') }}
         </h2>
         <button
           @click="closeModal"
           class="p-1 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"
           type="button"
-          aria-label="Cerrar modal de detalles"
+          :aria-label="$t('modal.closeModal')"
         >
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -40,7 +40,7 @@
             <svg class="w-5 h-5 mr-2 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
               <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd" />
             </svg>
-            {{ layerName }}
+            {{ displayLayerName }}
           </h3>
           <p class="text-sm text-gray-600 dark:text-gray-400">
             ID: {{ layerId }}
@@ -61,11 +61,11 @@
           </div>
 
           <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
-            Sección en Construcción
+            {{ $t('modal.underConstruction') }}
           </h4>
 
           <p class="text-gray-600 dark:text-gray-400 mb-4">
-            Los detalles completos de la capa estarán disponibles próximamente.
+            {{ $t('modal.detailsAvailableSoon') }}
           </p>
 
           <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
@@ -75,10 +75,10 @@
               </svg>
               <div class="text-left">
                 <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                  Funcionalidad en desarrollo
+                  {{ $t('modal.functionalityInDevelopment') }}
                 </p>
                 <p class="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                  Esta función incluirá información detallada sobre geometría, metadatos, estadísticas y configuración de la capa.
+                  {{ $t('modal.featureDescription') }}
                 </p>
               </div>
             </div>
@@ -93,7 +93,7 @@
           class="px-4 py-2 bg-green-600 dark:bg-green-500 text-white rounded-md hover:bg-green-700 dark:hover:bg-green-600 transition-colors focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           type="button"
         >
-          Cerrar
+          {{ $t('modal.close') }}
         </button>
       </footer>
     </div>
@@ -101,7 +101,10 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   show: {
@@ -114,12 +117,17 @@ const props = defineProps({
   },
   layerName: {
     type: String,
-    default: 'Capa sin nombre'
+    default: ''
   },
   layerDetails: {
     type: Object,
     default: () => ({})
   }
+})
+
+// Computed para el nombre de la capa con fallback traducido
+const displayLayerName = computed(() => {
+  return props.layerName || t('modal.layerName')
 })
 
 const emit = defineEmits(['close'])
@@ -136,7 +144,6 @@ const handleKeydown = (event) => {
 }
 
 // Add keyboard event listener when component mounts
-import { onMounted, onUnmounted } from 'vue'
 
 onMounted(() => {
   document.addEventListener('keydown', handleKeydown)

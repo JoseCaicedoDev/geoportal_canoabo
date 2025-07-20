@@ -7,7 +7,7 @@
     <!-- Records Info -->
     <div class="flex items-center text-sm text-geo-text/60">
       <span id="pagination-info" aria-live="polite">
-        Mostrando {{ startRecord }} - {{ endRecord }} de {{ totalRecords }} registros
+        {{ $t('attributes.pagination.showing', { start: startRecord, end: endRecord, total: totalRecords }) }}
       </span>
     </div>
 
@@ -93,6 +93,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   currentPage: {
@@ -156,19 +159,19 @@ const visiblePages = computed(() => {
 
 // ARIA labels
 const firstPageAriaLabel = computed(() =>
-  `Ir a la primera página${props.currentPage === 1 ? ', página actual' : ''}`
+  `${t('attributes.pagination.firstPage')}${props.currentPage === 1 ? `, ${t('attributes.pagination.currentPage')}` : ''}`
 )
 
 const prevPageAriaLabel = computed(() =>
-  `Ir a la página anterior${props.currentPage === 1 ? ', no disponible' : ''}`
+  `${t('attributes.pagination.previousPage')}${props.currentPage === 1 ? `, ${t('attributes.pagination.notAvailable')}` : ''}`
 )
 
 const nextPageAriaLabel = computed(() =>
-  `Ir a la página siguiente${props.currentPage === totalPages.value ? ', no disponible' : ''}`
+  `${t('attributes.pagination.nextPage')}${props.currentPage === totalPages.value ? `, ${t('attributes.pagination.notAvailable')}` : ''}`
 )
 
 const lastPageAriaLabel = computed(() =>
-  `Ir a la última página${props.currentPage === totalPages.value ? ', página actual' : ''}`
+  `${t('attributes.pagination.lastPage')}${props.currentPage === totalPages.value ? `, ${t('attributes.pagination.currentPage')}` : ''}`
 )
 
 // Methods

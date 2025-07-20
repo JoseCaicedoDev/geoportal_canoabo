@@ -18,6 +18,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useLayerStore } from '@/stores/layerStore'
 
 const props = defineProps({
@@ -37,11 +38,12 @@ const props = defineProps({
 })
 
 const store = useLayerStore()
+const { t } = useI18n()
 
 const menuItems = computed(() => [
   {
     icon: 'fas fa-eye',
-    text: 'Ver detalles',
+    text: t('contextMenu.viewDetails'),
     action: () => {
       store.showLayerDetails(props.layerId)
       store.hideContextMenu()
@@ -49,7 +51,7 @@ const menuItems = computed(() => [
   },
   {
     icon: 'fas fa-table',
-    text: 'Ver atributos',
+    text: t('contextMenu.viewAttributes'),
     action: () => {
       store.showAttributeTable(props.layerId)
       store.hideContextMenu()

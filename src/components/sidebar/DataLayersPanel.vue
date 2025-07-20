@@ -9,7 +9,7 @@
     >
       <div class="flex items-center space-x-3">
         <div class="w-4 h-4 bg-green-600 dark:bg-green-400 rounded" aria-hidden="true"></div>
-        <h3 id="data-layers-heading" class="text-sm font-medium text-gray-900 dark:text-white">Capas</h3>
+        <h3 id="data-layers-heading" class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('layers.layers') }}</h3>
       </div>
       <div class="flex items-center space-x-2">
         <i

@@ -9,7 +9,7 @@
     >
       <div class="flex items-center space-x-3">
         <div class="w-4 h-4 bg-geo-secondary dark:bg-geo-secondary rounded" aria-hidden="true"></div>
-        <h3 id="base-layers-heading" class="text-sm font-medium text-gray-900 dark:text-white">Basemap</h3>
+        <h3 id="base-layers-heading" class="text-sm font-medium text-gray-900 dark:text-white">{{ $t('layers.baseMap') }}</h3>
       </div>
       <i
         :class="[

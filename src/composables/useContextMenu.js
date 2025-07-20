@@ -1,4 +1,5 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { layerService } from '@/services/layerService'
 
 export function useContextMenu() {
@@ -6,14 +7,15 @@ export function useContextMenu() {
   const menuPosition = ref({ x: 0, y: 0 })
   const currentLayer = ref(null)
   const showMenu = ref(false)
+  const { t } = useI18n()
 
-  const menuItems = [
-    { icon: 'fas fa-eye', text: 'Ver detalles', action: 'showDetails' },
-    { icon: 'fas fa-table', text: 'Ver atributos', action: 'showAttributes' },
-    { icon: 'fas fa-palette', text: 'Cambiar estilo', action: 'changeStyle' },
-    { icon: 'fas fa-download', text: 'Descargar', action: 'downloadLayer' },
-    { icon: 'fas fa-info-circle', text: 'Propiedades', action: 'showProperties' }
-  ]
+  const menuItems = computed(() => [
+    { icon: 'fas fa-eye', text: t('contextMenu.viewDetails'), action: 'showDetails' },
+    { icon: 'fas fa-table', text: t('contextMenu.viewAttributes'), action: 'showAttributes' },
+    { icon: 'fas fa-palette', text: t('contextMenu.changeStyle'), action: 'changeStyle' },
+    { icon: 'fas fa-download', text: t('contextMenu.download'), action: 'downloadLayer' },
+    { icon: 'fas fa-info-circle', text: t('contextMenu.properties'), action: 'showProperties' }
+  ])
 
   const hideContextMenu = () => {
     showMenu.value = false

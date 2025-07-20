@@ -40,6 +40,13 @@
     "embankments": "Embankments",
     "perimeter": "Perimeter"
   },
+  "contextMenu": {
+    "viewDetails": "View details",
+    "viewAttributes": "View attributes",
+    "changeStyle": "Change style",
+    "download": "Download",
+    "properties": "Properties"
+  },
   "attributes": {
     "title": "Attribute Table",
     "loading": "Loading attributes...",
@@ -58,17 +65,70 @@
     "refresh": "Refresh data",
     "refreshing": "Updating data...",
     "lastRefresh": "Last update: {time}",
-    "source": "Source: WFS GeoServer Service"
+    "source": "Source: WFS GeoServer Service",
+    "total": "Total",
+    "filtered": "Filtered",
+    "close": "Close attributes panel",
+    "export": "Export",
+    "exporting": "Exporting...",
+    "pagination": {
+      "showing": "Showing {start} - {end} of {total} records",
+      "firstPage": "Go to first page",
+      "previousPage": "Go to previous page",
+      "nextPage": "Go to next page",
+      "lastPage": "Go to last page",
+      "currentPage": "current page",
+      "notAvailable": "not available"
+    },
+    "sort": {
+      "ascending": "Sort ascending",
+      "descending": "Sort descending"
+    },
+    "actions": {
+      "zoomTo": "Zoom to feature",
+      "select": "Select row"
+    },
+    "messages": {
+      "selectionCleared": "Selection cleared",
+      "noDataSelected": "No data selected for export",
+      "exportError": "Error exporting selection",
+      "noDataToExport": "No data to export",
+      "exportAllError": "Error exporting data"
+    },
+    "clickToSelect": "Click to select row and element on map",
+    "clickToDeselect": "Row selected - click to deselect",
+    "sortedAscending": "Sorted ascending",
+    "sortedDescending": "Sorted descending"
   },
   "map": {
     "scale": "Scale",
-    "coordinates": "Coordinates"
+    "coordinates": "Coordinates",
+    "scaleInfo": "Map scale information",
+    "coordinatesInfo": "Cursor coordinates",
+    "moveCursorPrompt": "Move cursor over the map",
+    "coordinatesError": "Coordinates error",
+    "controls": {
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "home": "Initial view",
+      "fullscreen": "Fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "zoomControls": "Zoom controls",
+      "mapNavigation": "Map navigation",
+      "mapView": "Map view"
+    }
   },
   "modal": {
     "close": "Close",
     "layerDetails": "Layer Details",
     "properties": "Properties",
-    "actions": "Actions"
+    "actions": "Actions",
+    "closeModal": "Close details modal",
+    "layerName": "Unnamed layer",
+    "underConstruction": "Under Construction",
+    "detailsAvailableSoon": "Complete layer details will be available soon.",
+    "functionalityInDevelopment": "Feature in development",
+    "featureDescription": "This feature will include detailed information about geometry, metadata, statistics and layer configuration."
   },
   "common": {
     "loading": "Loading...",

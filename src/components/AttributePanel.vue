@@ -41,8 +41,8 @@
           :records-per-page="pagination.itemsPerPage.value"
           :selected-row-index="selectedRowIndex"
           :texture-colors="textureColors"
-          :loading-text="'Cargando datos...'"
-          :empty-text="'No hay datos para mostrar'"
+          :loading-text="$t('attributes.loading')"
+          :empty-text="$t('attributes.noData')"
           @sort="handleSort"
           @row-select="handleRowSelect"
         />
@@ -68,6 +68,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useLayerStore } from '@/stores/layerStore'
 import { layerService } from '@/services/layerService'
 import {
@@ -87,6 +88,7 @@ import {
 
 // Store
 const store = useLayerStore()
+const { t } = useI18n()
 
 // Legacy state (maintaining compatibility)
 const layerData = ref([])
@@ -127,11 +129,11 @@ const displayName = computed(() => {
 })
 
 const headerTitle = computed(() =>
-  `Tabla de Atributos - ${displayName.value}`
+  `${t('attributes.title')} - ${displayName.value}`
 )
 
 const exportButtonText = computed(() =>
-  `Exportar`
+  t('attributes.export')
 )
 
 // Contadores para el header
@@ -279,12 +281,12 @@ const clearMapSelection = async () => {
 const handleClearSelection = () => {
   selectedRowIndex.value = null
   clearMapSelection()
-  showStatusMessage('Selección limpiada')
+  showStatusMessage(t('attributes.messages.selectionCleared'))
 }
 
 const handleExportSelected = async () => {
   if (selectedRowIndex.value === null) {
-    showStatusMessage('No hay datos seleccionados para exportar', 'error')
+    showStatusMessage(t('attributes.messages.noDataSelected'), 'error')
     return
   }
 
@@ -304,14 +306,14 @@ const handleExportSelected = async () => {
       showStatusMessage(result.message, 'error')
     }
   } catch (error) {
-    showStatusMessage('Error al exportar la selección', 'error')
+    showStatusMessage(t('attributes.messages.exportError'), 'error')
   }
 }
 
 const handleExportAll = async () => {
   try {
     if (!layerData.value.length) {
-      showStatusMessage('No hay datos para exportar', 'error')
+      showStatusMessage(t('attributes.messages.noDataToExport'), 'error')
       return
     }
 
@@ -328,7 +330,7 @@ const handleExportAll = async () => {
       showStatusMessage(result.message, 'error')
     }
   } catch (error) {
-    showStatusMessage('Error al exportar los datos', 'error')
+    showStatusMessage(t('attributes.messages.exportAllError'), 'error')
   }
 }
 
@@ -336,9 +338,9 @@ const handleRefreshData = async () => {
   refreshing.value = true
   try {
     await loadLayerData(store.currentLayerId)
-    showStatusMessage('Datos actualizados correctamente')
+    showStatusMessage(t('attributes.refresh'))
   } catch (error) {
-    showStatusMessage('Error al actualizar los datos', 'error')
+    showStatusMessage(t('attributes.messages.exportAllError'), 'error')
   } finally {
     refreshing.value = false
   }
@@ -357,10 +359,10 @@ const exportAttributes = async () => {
     a.click()
     window.URL.revokeObjectURL(url)
     document.body.removeChild(a)
-    showStatusMessage('Datos exportados correctamente')
+    showStatusMessage(t('attributes.refresh'))
   } catch (error) {
     console.error('Error al exportar:', error)
-    showStatusMessage('Error al exportar los datos', 'error')
+    showStatusMessage(t('attributes.messages.exportAllError'), 'error')
   }
 }
 

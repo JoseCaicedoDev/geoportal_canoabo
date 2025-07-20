@@ -1,13 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useDarkMode } from '@/composables/useDarkMode'
 import { useLanguage } from '@/composables/useLanguage'
+
+const { t } = useI18n()
 
 // Importamos el composable de dark mode
 const { isDarkMode, toggleDarkMode } = useDarkMode()
 
 // Importamos el composable de idioma y inicializamos
 const { initializeLanguage } = useLanguage()
+
+// Computed property para el título del botón de modo oscuro/claro
+const darkModeTitle = computed(() => {
+  return isDarkMode.value
+    ? t('header.lightModeToggle')
+    : t('header.darkModeToggle')
+})
 
 // Inicializar el idioma cuando el componente se monta
 initializeLanguage()
@@ -32,7 +42,8 @@ initializeLanguage()
         <button
           class="p-2 rounded-lg hover:bg-geo-hover transition-colors text-geo-text"
           @click="toggleDarkMode"
-          :title="isDarkMode ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+          :title="darkModeTitle"
+          :aria-label="darkModeTitle"
         >
           <i :class="[
             'fas',

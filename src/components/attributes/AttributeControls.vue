@@ -8,7 +8,7 @@
       <!-- Search Input -->
       <div class="flex-1">
         <label for="attribute-search" class="sr-only">
-          Buscar en los atributos
+          {{ $t('attributes.search') }}
         </label>
         <input
           id="attribute-search"
@@ -27,7 +27,7 @@
           for="records-per-page"
           class="text-sm text-gray-600 dark:text-gray-400"
         >
-          Mostrar:
+          {{ $t('attributes.show') }}
         </label>
         <select
           id="records-per-page"
@@ -62,6 +62,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   searchTerm: {
@@ -74,7 +77,7 @@ const props = defineProps({
   },
   searchPlaceholder: {
     type: String,
-    default: 'Buscar en los atributos...'
+    default: ''
   },
   recordsOptions: {
     type: Array,
@@ -96,7 +99,7 @@ const searchResultsMessage = computed(() => {
   if (props.totalResults === null) return ''
 
   return props.totalResults === 0
-    ? 'No se encontraron resultados'
-    : `Se encontraron ${props.totalResults} resultado${props.totalResults !== 1 ? 's' : ''}`
+    ? t('attributes.noResultsFound')
+    : t('attributes.recordsFound', { count: props.totalResults }, props.totalResults)
 })
 </script>

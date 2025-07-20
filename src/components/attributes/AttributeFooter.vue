@@ -7,8 +7,8 @@
     <!-- Statistics Summary -->
     <div class="flex items-center space-x-4 text-sm text-geo-text/60">
       <span aria-label="Estadísticas de datos">
-        <strong>{{ totalRecords }}</strong> registro{{ totalRecords !== 1 ? 's' : '' }}
-        {{ filteredRecords !== totalRecords ? `(${filteredRecords} filtrado${filteredRecords !== 1 ? 's' : ''})` : '' }}
+        <strong>{{ totalRecords }}</strong> {{ $t('attributes.records', totalRecords) }}
+        {{ filteredRecords !== totalRecords ? `(${filteredRecords} ${$t('attributes.filtered').toLowerCase()}${filteredRecords !== 1 ? 's' : ''})` : '' }}
       </span>
 
       <span
@@ -16,7 +16,7 @@
         class="text-geo-primary font-medium"
         aria-label="Registros seleccionados"
       >
-        {{ selectedCount }} seleccionado{{ selectedCount !== 1 ? 's' : '' }}
+        {{ selectedCount }} {{ $t('attributes.selected') }}
       </span>
     </div>
 
@@ -34,7 +34,7 @@
         type="button"
         aria-label="Limpiar selección"
       >
-        Limpiar selección
+        {{ $t('attributes.clearSelection') }}
       </button>
 
       <!-- Export Selected -->
@@ -46,7 +46,7 @@
         type="button"
         :aria-label="exportSelectedAriaLabel"
       >
-        {{ exporting ? 'Exportando...' : `Exportar selección (${selectedCount})` }}
+        {{ exporting ? $t('attributes.exporting') : $t('attributes.exportSelected', { count: selectedCount }) }}
       </button>
 
       <!-- Export All -->
@@ -98,6 +98,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   totalRecords: {
@@ -142,31 +145,32 @@ defineEmits([
 
 // Computed properties
 const exportSelectedAriaLabel = computed(() =>
-  `Exportar ${props.selectedCount} registro${props.selectedCount !== 1 ? 's' : ''} seleccionado${props.selectedCount !== 1 ? 's' : ''}`
+  t('attributes.exportSelected', { count: props.selectedCount })
 )
 
 const exportAllAriaLabel = computed(() => {
   const count = props.filteredRecords
-  return `Exportar todos los ${count} registro${count !== 1 ? 's' : ''}${props.filteredRecords !== props.totalRecords ? ' filtrados' : ''}`
+  return props.filteredRecords !== props.totalRecords
+    ? t('attributes.exportFiltered', { count })
+    : t('attributes.exportAll', { count })
 })
 
 const exportAllText = computed(() => {
   const count = props.filteredRecords
-  if (props.filteredRecords !== props.totalRecords) {
-    return `Exportar filtrados (${count})`
-  }
-  return `Exportar todo (${count})`
+  return props.filteredRecords !== props.totalRecords
+    ? t('attributes.exportFiltered', { count })
+    : t('attributes.exportAll', { count })
 })
 
 const refreshAriaLabel = computed(() =>
-  props.refreshing ? 'Actualizando datos...' : 'Actualizar datos'
+  props.refreshing ? t('attributes.refreshing') : t('attributes.refresh')
 )
 
 const refreshTitle = computed(() => {
-  if (props.refreshing) return 'Actualizando datos...'
+  if (props.refreshing) return t('attributes.refreshing')
   if (props.lastRefresh) {
-    return `Última actualización: ${props.lastRefresh.toLocaleTimeString('es-ES')}`
+    return t('attributes.lastRefresh', { time: props.lastRefresh.toLocaleTimeString() })
   }
-  return 'Actualizar datos'
+  return t('attributes.refresh')
 })
 </script>
