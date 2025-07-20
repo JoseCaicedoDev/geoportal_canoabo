@@ -33,8 +33,13 @@ export default defineConfig({
           charts: ['chart.js']
         }
       }
-    }
+    },
+    // Copiar archivos GeoJSON al build
+    copyPublicDir: true
   },
+  
+  // Configurar archivos públicos adicionales
+  publicDir: 'public',
   
   server: {
     proxy: {

@@ -14,6 +14,14 @@ import {
   OPENTOPOMAP_ATTRIBUTION
 } from '../urls.js'
 
+// Función para obtener la URL correcta basada en el entorno
+function getAssetUrl(path) {
+  const base = import.meta.env.BASE_URL || '/'
+  // Asegurar que la ruta comience con ./
+  const cleanPath = path.startsWith('./') ? path.slice(2) : path.replace(/^\//, '')
+  return base + cleanPath
+}
+
 class MapService {
   constructor() {
     this.map = null
@@ -111,10 +119,12 @@ class MapService {
 
       let geojsonData;
       
-      // Si la URL está usando archivos locales o es un archivo local, usar fetch directo
-      // De lo contrario, intentar obtener datos del layerService
+      // Si la URL está usando archivos locales o es un archivo local, usar fetch directo con URL corregida
       if (url.includes('/data/') || layerConfig?.type === 'local') {
-        const response = await fetch(url)
+        const fullUrl = getAssetUrl(url);
+        console.log('Loading GeoJSON from mapService:', fullUrl);
+        
+        const response = await fetch(fullUrl)
         if (!response.ok) {
           console.error('Error al obtener GeoJSON:', response.status, response.statusText)
           throw new Error(`HTTP error! status: ${response.status}`)

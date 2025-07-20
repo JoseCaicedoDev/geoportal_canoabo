@@ -7,6 +7,14 @@ import {
 import proj4 from 'proj4'
 import { reproject } from 'reproject'
 
+// Función para obtener la URL correcta basada en el entorno
+function getAssetUrl(path) {
+  const base = import.meta.env.BASE_URL || '/'
+  // Asegurar que la ruta comience con ./
+  const cleanPath = path.startsWith('./') ? path.slice(2) : path.replace(/^\//, '')
+  return base + cleanPath
+}
+
 // Configuración de capas
 const layerGroups = {
   'hydrology': {
@@ -28,10 +36,10 @@ const layerGroups = {
 
 // URLs de archivos locales como fallback
 const localFiles = {
-  'suelos-wfs': '/data/pg_Suelo8_ur.geojson',
-  'rios-wfs': '/data/rios_ur.geojson',
-  'embalse-wfs': '/data/pg_emblase_ur.geojson',
-  'perimetro-wfs': '/data/pg_perimetro.geojson'
+  'suelos-wfs': './data/pg_Suelo8_ur.geojson',
+  'rios-wfs': './data/rios_ur.geojson',
+  'embalse-wfs': './data/pg_emblase_ur.geojson',
+  'perimetro-wfs': './data/pg_perimetro.geojson'
 }
 
 /**
@@ -65,7 +73,11 @@ function reprojectGeoJSON(geoJSON, fromCRS, toCRS = "EPSG:4326") {
  */
 async function getGeoJSONData(url) {
   try {
-    const response = await fetch(url);
+    // Construir la URL correcta usando la función utilitaria
+    const fullUrl = getAssetUrl(url);
+    console.log('Loading GeoJSON from:', fullUrl);
+    
+    const response = await fetch(fullUrl);
 
     if (!response.ok) {
       throw new Error(`Error al cargar los datos: ${response.status}`);
@@ -82,6 +94,7 @@ async function getGeoJSONData(url) {
     return geoJSONData;
   } catch (error) {
     console.error('Error obteniendo datos GeoJSON:', error);
+    console.error('Error loading local GeoJSON file:', url);
     return null;
   }
 }
