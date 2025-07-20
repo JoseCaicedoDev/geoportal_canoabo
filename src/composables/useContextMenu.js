@@ -26,7 +26,6 @@ export function useContextMenu() {
     switch (action) {
       case 'showDetails':
         // TO-DO: Implementar visualización de detalles
-        console.log('Mostrando detalles de:', layerService.getLayerDisplayName(currentLayer.value))
         break
       case 'showAttributes':
         // Esta acción será manejada por el componente padre
@@ -39,7 +38,6 @@ export function useContextMenu() {
         break
       case 'showProperties':
         const properties = await layerService.showLayerProperties(currentLayer.value)
-        console.log('Propiedades:', properties)
         break
     }
 

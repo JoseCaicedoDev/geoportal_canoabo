@@ -46,7 +46,6 @@ export const useLayerStore = defineStore('layer', () => {
         ...details
       }
       layerDetailsModalVisible.value = true
-      console.log('Detalles de capa:', currentLayerDetails.value)
     } catch (error) {
       console.error('Error al cargar detalles de la capa:', error)
       // Mostrar detalles básicos en caso de error
@@ -64,10 +63,8 @@ export const useLayerStore = defineStore('layer', () => {
   }
 
   const showAttributeTable = (layerId) => {
-    console.log('showAttributeTable called with layerId:', layerId)
     currentLayerId.value = layerId
     attributePanelVisible.value = true
-    console.log('After setting values - currentLayerId:', currentLayerId.value, 'attributePanelVisible:', attributePanelVisible.value)
   }
 
   const changeLayerStyle = async (layerId) => {

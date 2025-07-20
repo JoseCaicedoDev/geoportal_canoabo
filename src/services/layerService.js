@@ -163,27 +163,30 @@ export const layerService = {
         const featureId = props.id || props.gml_id || props.fid || props.gid || props.objectid || `feature_${index}`
 
         const processedFeature = {
-          // Include all possible ID fields for selection
+          // Primary ID for selection (only add if not already exists)
           id: featureId,
-          fid: props.fid || props.gml_id || featureId,
-          gml_id: props.gml_id || featureId,
-          gid: props.gid || featureId,
-          objectid: props.objectid || featureId,
-
-          // Standard fields
-          nombre: props.nombre || props.h1_text || props.name || props.Name || 'Sin nombre',
-          tipo: props.tipo || props.type || props.Type || 'N/A',
-          area: props.area || props.Area || 'N/A',
-          ph: props.ph || props.pH || 'N/A',
-          clasificacion: props.clasificacion || props.h1_text || 'N/A',
-          fuente: 'WFS GeoServer',
-
+          
           // Include geometry for selection
           geometry: feature.geometry,
 
-          // Include all original properties
+          // Include ONLY original properties from the JSON
           ...props
         }
+
+        // Only add alternative ID fields if they don't already exist and are different from primary ID
+        if (props.fid && props.fid !== featureId) {
+          processedFeature.fid = props.fid
+        }
+        if (props.gml_id && props.gml_id !== featureId) {
+          processedFeature.gml_id = props.gml_id
+        }
+        if (props.gid && props.gid !== featureId) {
+          processedFeature.gid = props.gid
+        }
+        if (props.objectid && props.objectid !== featureId) {
+          processedFeature.objectid = props.objectid
+        }
+
         return processedFeature
       })
 
