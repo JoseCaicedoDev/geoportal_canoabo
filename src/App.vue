@@ -35,7 +35,6 @@ onMounted(() => {
       :show="layerDetailsModalVisible"
       :layer-id="currentLayerDetails?.id || ''"
       :layer-name="currentLayerDetails?.name || ''"
-      :layer-details="currentLayerDetails || {}"
       @close="layerStore.hideLayerDetails"
     />
   </div>

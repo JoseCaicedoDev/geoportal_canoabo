@@ -331,6 +331,91 @@ export const layerService = {
 
   async selectFeatureOnMap(layerId, featureId) {
     return this.zoomToFeature(layerId, featureId)
+  },
+
+  // Extraer el nombre técnico de la capa desde la URL WFS
+  getLayerTechnicalName(layerId) {
+    const config = this.getLayerConfig(layerId)
+    if (!config || !config.url) {
+      return null
+    }
+
+    try {
+      // Buscar el parámetro typeName en la URL
+      const url = new URL(config.url, window.location.origin)
+      const typeName = url.searchParams.get('typeName')
+
+      if (typeName) {
+        // Extraer la parte después de los dos puntos (ej: "canoabo:pg_rios_ur" -> "pg_rios_ur")
+        const parts = typeName.split(':')
+        return parts.length > 1 ? parts[1] : typeName
+      }
+    } catch (error) {
+      console.error('Error parsing layer URL:', error)
+    }
+
+    return null
+  },
+
+  // Obtener información detallada de la capa para el modal
+  async getLayerDetails(layerId) {
+    try {
+      const config = this.getLayerConfig(layerId)
+      const displayName = this.getLayerDisplayName(layerId)
+      const technicalName = this.getLayerTechnicalName(layerId)
+
+      if (!config) {
+        return {
+          name: technicalName || displayName,
+          displayName: displayName,
+          geometryType: 'Unknown',
+          recordCount: 0,
+          serviceType: 'Unknown',
+          variables: [],
+          referenceSystem: 'EPSG:4326'
+        }
+      }
+
+      // Obtener datos de la capa para calcular el número de registros y variables
+      let data = []
+      let variables = []
+
+      if (config.type === 'wfs') {
+        data = await this.getWFSData(layerId)
+
+        // Extraer variables (campos) de los datos
+        if (data.length > 0) {
+          variables = Object.keys(data[0]).filter(key =>
+            !['id', 'geometry', 'fid', 'gml_id', 'gid', 'objectid'].includes(key)
+          )
+        }
+      }
+
+      return {
+        name: technicalName || displayName, // Nombre técnico para el campo "Layer name"
+        displayName: displayName, // Nombre amigable para el título del modal
+        geometryType: config.geometryType || 'Unknown',
+        recordCount: data.length,
+        serviceType: config.type.toUpperCase(),
+        variables: variables,
+        referenceSystem: 'EPSG:4326', // Todas las capas usan este sistema de referencia
+        url: config.url
+      }
+    } catch (error) {
+      console.error('Error getting layer details:', error)
+      const displayName = this.getLayerDisplayName(layerId)
+      const technicalName = this.getLayerTechnicalName(layerId)
+
+      return {
+        name: technicalName || displayName,
+        displayName: displayName,
+        geometryType: 'Unknown',
+        recordCount: 0,
+        serviceType: 'Error',
+        variables: [],
+        referenceSystem: 'EPSG:4326'
+      }
+    }
   }
 }
 

@@ -38,23 +38,11 @@ export const useLayerStore = defineStore('layer', () => {
 
   // Acciones del menú contextual
   const showLayerDetails = async (layerId) => {
-    try {
-      const details = await layerService.showLayerProperties(layerId)
-      currentLayerDetails.value = {
-        id: layerId,
-        name: layerService.getLayerDisplayName(layerId),
-        ...details
-      }
-      layerDetailsModalVisible.value = true
-    } catch (error) {
-      console.error('Error al cargar detalles de la capa:', error)
-      // Mostrar detalles básicos en caso de error
-      currentLayerDetails.value = {
-        id: layerId,
-        name: layerService.getLayerDisplayName(layerId)
-      }
-      layerDetailsModalVisible.value = true
+    currentLayerDetails.value = {
+      id: layerId,
+      name: layerService.getLayerDisplayName(layerId)
     }
+    layerDetailsModalVisible.value = true
   }
 
   const hideLayerDetails = () => {

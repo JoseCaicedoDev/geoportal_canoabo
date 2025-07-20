@@ -125,10 +125,29 @@
     "actions": "Acciones",
     "closeModal": "Cerrar modal de detalles",
     "layerName": "Capa sin nombre",
+    "loading": "Cargando información...",
     "underConstruction": "Sección en Construcción",
     "detailsAvailableSoon": "Los detalles completos de la capa estarán disponibles próximamente.",
     "functionalityInDevelopment": "Funcionalidad en desarrollo",
-    "featureDescription": "Esta función incluirá información detallada sobre geometría, metadatos, estadísticas y configuración de la capa."
+    "featureDescription": "Esta función incluirá información detallada sobre geometría, metadatos, estadísticas y configuración de la capa.",
+    "layerInfo": {
+      "name": "Nombre de la capa",
+      "geometryType": "Tipo de geometría",
+      "recordCount": "Cantidad de registros",
+      "serviceType": "Tipo de servicio",
+      "variables": "Campos",
+      "referenceSystem": "Sistema de referencia",
+      "loading": "Cargando información...",
+      "noData": "No disponible"
+    },
+    "geometryTypes": {
+      "Point": "Punto",
+      "LineString": "Línea",
+      "Polygon": "Polígono",
+      "MultiPoint": "Multi-punto",
+      "MultiLineString": "Multi-línea",
+      "MultiPolygon": "Multi-polígono"
+    }
   },
   "common": {
     "loading": "Cargando...",

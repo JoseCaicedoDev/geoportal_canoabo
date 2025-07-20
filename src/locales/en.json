@@ -125,10 +125,29 @@
     "actions": "Actions",
     "closeModal": "Close details modal",
     "layerName": "Unnamed layer",
+    "loading": "Loading information...",
     "underConstruction": "Under Construction",
     "detailsAvailableSoon": "Complete layer details will be available soon.",
     "functionalityInDevelopment": "Feature in development",
-    "featureDescription": "This feature will include detailed information about geometry, metadata, statistics and layer configuration."
+    "featureDescription": "This feature will include detailed information about geometry, metadata, statistics and layer configuration.",
+    "layerInfo": {
+      "name": "Layer name",
+      "geometryType": "Geometry type",
+      "recordCount": "Record count",
+      "serviceType": "Service type",
+      "variables": "Fields",
+      "referenceSystem": "Reference system",
+      "loading": "Loading information...",
+      "noData": "Not available"
+    },
+    "geometryTypes": {
+      "Point": "Point",
+      "LineString": "Line",
+      "Polygon": "Polygon",
+      "MultiPoint": "Multi-point",
+      "MultiLineString": "Multi-line",
+      "MultiPolygon": "Multi-polygon"
+    }
   },
   "common": {
     "loading": "Loading...",
