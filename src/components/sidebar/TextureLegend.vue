@@ -12,11 +12,11 @@
         class="flex items-center space-x-2"
       >
         <div
-          class="w-2.5 h-2.5 rounded-full border border-gray-300 flex-shrink-0"
+          class="w-2.5 h-2.5 rounded-full border border-gray-300 dark:border-gray-600 flex-shrink-0"
           :style="{ backgroundColor: textura.color }"
           :aria-label="`Color ${textura.name}`"
         ></div>
-        <span class="text-xs text-geo-text/80">{{ textura.name }}</span>
+        <span class="text-xs text-gray-700 dark:text-gray-300">{{ textura.name }}</span>
       </div>
     </div>
   </div>

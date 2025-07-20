@@ -214,7 +214,7 @@ onUnmounted(() => {
         <BaseLayerSelector
           :base-layers="baseLayers"
           :selected-base-layer="selectedBaseLayer"
-          :initially-open="true"
+          :initially-open="false"
           @base-layer-change="handleBaseLayerChange"
         />
 

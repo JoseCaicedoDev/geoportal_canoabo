@@ -8,13 +8,13 @@
       aria-controls="data-layers-content"
     >
       <div class="flex items-center space-x-3">
-        <div class="w-4 h-4 bg-geo-secondary rounded" aria-hidden="true"></div>
-        <h3 id="data-layers-heading" class="text-sm font-medium text-geo-text">Capas</h3>
+        <div class="w-4 h-4 bg-green-600 dark:bg-green-400 rounded" aria-hidden="true"></div>
+        <h3 id="data-layers-heading" class="text-sm font-medium text-gray-900 dark:text-white">Capas</h3>
       </div>
       <div class="flex items-center space-x-2">
         <i
           :class="[
-            'fas fa-chevron-down text-geo-text/60 transform transition-transform',
+            'fas fa-chevron-down text-gray-600 dark:text-gray-300 transform transition-transform',
             isOpen ? 'rotate-180' : ''
           ]"
           aria-hidden="true"
@@ -25,7 +25,7 @@
     <div
       v-show="isOpen"
       id="data-layers-content"
-      class="border-t border-geo-border p-3 bg-geo-hover/50"
+      class="border-t border-gray-200 dark:border-gray-700 p-3 bg-gray-50 dark:bg-gray-800"
     >
       <!-- Layer list -->
       <div class="space-y-3" role="list" aria-label="Lista de capas de datos">

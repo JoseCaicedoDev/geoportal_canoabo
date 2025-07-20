@@ -166,11 +166,11 @@ const filteredData = computed(() => {
             Limpiar selección
           </button>
           <div class="flex items-center space-x-1">
-            <button class="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100">
+            <button class="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
               <i class="fas fa-chevron-left"></i>
             </button>
-            <span class="px-2 py-1 text-xs">1</span>
-            <button class="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-100">
+            <span class="px-2 py-1 text-xs text-gray-700 dark:text-gray-300">1</span>
+            <button class="px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
