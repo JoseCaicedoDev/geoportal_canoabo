@@ -184,25 +184,9 @@ export const layerService = {
           // Include all original properties
           ...props
         }
-
-        // Log first few features for debugging
-        if (index < 3) {
-          console.log(`${layerId} feature ${index}:`, {
-            originalProps: props,
-            processedIds: {
-              id: processedFeature.id,
-              fid: processedFeature.fid,
-              gml_id: processedFeature.gml_id,
-              gid: processedFeature.gid,
-              objectid: processedFeature.objectid
-            }
-          })
-        }
-
         return processedFeature
       })
 
-      console.log(`${layerId}: Processed ${processedFeatures.length} features`)
       return processedFeatures
     } catch (error) {
       console.error('Error getting WFS data:', error)
@@ -334,15 +318,6 @@ export const layerService = {
           }
         }
       }
-
-      console.log('Attempting to select feature:', {
-        layerId,
-        featureId,
-        featureFound: !!feature,
-        coordinates,
-        totalFeatures: layerData.length
-      })
-
       // Select and zoom to feature on map
       return mapService.selectFeature(layerId, featureId, coordinates)
     } catch (error) {

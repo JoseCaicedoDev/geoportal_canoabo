@@ -141,7 +141,6 @@ const loadDefaultLayers = async () => {
           const options = createLayerOptions(layerId)
           await mapService.addWFSLayer(layerId, layerConfig.url, options)
           mapService.addLayer(layerId)
-          console.log(`Capa por defecto cargada y agregada al mapa: ${layerId}`)
         }
       } catch (error) {
         console.error(`Error al cargar la capa por defecto ${layerId}:`, error)
@@ -177,9 +176,6 @@ onMounted(async () => {
       baseLayers.value = mapService.getBaseLayers()
       // Sincronizar con la capa base actual
       selectedBaseLayer.value = mapService.getCurrentBaseLayerId()
-      console.log('MapService conectado, capas base cargadas:', baseLayers.value)
-      console.log('Capas WFS cargadas:', wfsLayerGroups.value)
-
       // Cargar capas por defecto una vez que mapService esté disponible
       await loadDefaultLayers()
     } else {

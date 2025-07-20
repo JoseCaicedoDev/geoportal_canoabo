@@ -165,10 +165,8 @@ const loadLayerData = async (layerId) => {
 
   isLoading.value = true
   try {
-    console.log('Loading data for layer:', layerId)
     const data = await layerService.getLayerData(layerId)
     layerData.value = data
-    console.log('Loaded data:', data)
   } catch (error) {
     console.error('Error loading layer data:', error)
     layerData.value = []
@@ -224,7 +222,6 @@ const selectFeatureOnMap = async (row) => {
     const featureId = row.id || row.fid || row.objectid || row.gid
 
     if (featureId && store.currentLayerId) {
-      console.log('Selecting feature on map:', featureId, 'for layer:', store.currentLayerId)
       const success = await layerService.selectFeatureOnMap(store.currentLayerId, featureId)
 
       if (success) {
@@ -327,13 +324,11 @@ const showStatusMessage = (message, type = 'info') => {
 
 // Watchers
 watch(() => store.currentLayerId, async (newLayerId) => {
-  console.log('Current layer changed:', newLayerId)
   await loadLayerData(newLayerId)
   resetPagination()
 }, { immediate: true })
 
 watch(() => store.attributePanelVisible, (visible) => {
-  console.log('AttributePanel visibility changed:', visible, 'Current layer:', store.currentLayerId)
   if (!visible) {
     resetPagination()
     statusMessage.value = ''
@@ -342,7 +337,6 @@ watch(() => store.attributePanelVisible, (visible) => {
 
 // Lifecycle
 onMounted(() => {
-  console.log('AttributePanel mounted, current layer:', store.currentLayerId)
   if (store.currentLayerId) {
     loadLayerData(store.currentLayerId)
   }

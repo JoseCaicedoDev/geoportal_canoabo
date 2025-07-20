@@ -104,7 +104,6 @@ class MapService {
 
   async addWFSLayer(layerId, url, options = {}) {
     try {
-      console.log(`Cargando capa WFS: ${layerId} desde ${url}`)
 
       // Import layerService to get configuration
       const { layerService } = await import('./layerService.js')
@@ -123,9 +122,6 @@ class MapService {
         console.warn('GeoJSON no contiene features.')
         return null
       }
-
-      console.log(`GeoJSON cargado exitosamente: ${geojsonData.features.length} features`)
-
       // Normalizar los IDs de los features para que coincidan con layerService
       geojsonData.features.forEach((feature, index) => {
         const props = feature.properties
@@ -137,16 +133,12 @@ class MapService {
         if (!feature.properties.id) {
           feature.properties.id = featureId
         }
-
-        console.log(`Normalized feature ${index}: id=${featureId}, originalProps:`, props)
       })
 
       let layer
 
       // Configuración específica para suelos con colores por textura
       if (layerId === 'suelos-wfs') {
-        console.log('Configurando capa de suelos con colores por textura')
-
         const texturaColors = {
           a: '#2d2139',      // Arenoso
           aF: '#7fa7c5',     // Areno Franco
@@ -162,8 +154,6 @@ class MapService {
           pointToLayer(feature, latlng) {
             const texturaValue = feature.properties.h1_text || feature.properties.textura || 'A'
             const color = texturaColors[texturaValue] || '#888888'
-
-            console.log(`Punto de suelo: textura=${texturaValue}, color=${color}`)
 
             return L.circleMarker(latlng, {
               radius: 6,
@@ -211,9 +201,6 @@ class MapService {
 
         // Merge configuration styles with defaults and options
         const finalStyle = { ...defaultStyle, ...configStyle, ...options.style }
-
-        console.log(`Aplicando estilo para ${layerId}:`, finalStyle)
-
         const layerGeoJSONConfig = {
           style: feature => {
             return finalStyle
@@ -244,7 +231,6 @@ class MapService {
       }
 
       this.layers.set(layerId, layer)
-      console.log(`Capa ${layerId} creada exitosamente`)
       return layer
     } catch (error) {
       console.error(`Error loading WFS layer ${layerId}:`, error)
@@ -325,15 +311,6 @@ class MapService {
     this.clearSelection()
 
     const layer = this.layers.get(layerId)
-    if (!layer) {
-      console.log('Layer not found:', layerId)
-      console.log('Available layers:', Array.from(this.layers.keys()))
-      return false
-    }
-
-    console.log(`Searching for feature ${featureId} in layer ${layerId}`)
-    console.log(`Layer has ${layer.getLayers().length} features`)
-
     // Find and highlight the feature
     let featureFound = false
     const allFeatureIds = []
@@ -365,15 +342,6 @@ class MapService {
         const idMatch = possibleIds.some(id => id && String(id) === searchId)
 
         if (idMatch) {
-          console.log('Feature found for selection:', {
-            layerId,
-            featureId,
-            foundId: possibleIds.find(id => id && String(id) === searchId),
-            properties: props,
-            geometryType: feature.feature.geometry.type,
-            currentStyle: feature.options
-          })
-
           // Highlight the feature
           this.highlightFeature(feature)
 
@@ -398,22 +366,10 @@ class MapService {
       }
     })
 
-    if (!featureFound) {
-      console.log('Feature not found for selection:', {
-        layerId,
-        featureId,
-        searchId: String(featureId),
-        layerFeatureCount: layer.getLayers().length,
-        availableFeatureIds: allFeatureIds.slice(0, 5) // Show first 5 features for debugging
-      })
-    }
-
     return featureFound
   }
 
   highlightFeature(feature) {
-    console.log('Highlighting feature:', feature)
-
     // Store original style
     if (!feature._originalStyle) {
       feature._originalStyle = {
@@ -467,21 +423,13 @@ class MapService {
 
     // Store reference for clearing later
     this.selectedFeature = feature
-
-    console.log('Feature highlighted with style:', {
-      geomType,
-      style: feature.options
-    })
   }
 
   clearSelection() {
     if (this.selectedFeature) {
-      console.log('Clearing selection for feature:', this.selectedFeature)
-
       // Restore original style
       if (this.selectedFeature._originalStyle) {
         this.selectedFeature.setStyle(this.selectedFeature._originalStyle)
-        console.log('Original style restored:', this.selectedFeature._originalStyle)
       }
 
       this.selectedFeature = null

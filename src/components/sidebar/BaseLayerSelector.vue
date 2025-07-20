@@ -75,9 +75,4 @@ const isOpen = ref(props.initiallyOpen)
 const toggleAccordion = () => {
   isOpen.value = !isOpen.value
 }
-
-// Watcher para sincronizar con cambios externos
-watch(() => props.selectedBaseLayer, (newValue) => {
-  console.log('Base layer changed to:', newValue)
-})
 </script>

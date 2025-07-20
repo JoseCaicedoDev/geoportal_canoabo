@@ -78,17 +78,10 @@ const initializeMap = async () => {
 
     // Exponer mapService globalmente para otros componentes
     window.mapService = mapService
-
-    console.log('Mapa inicializado correctamente')
   } catch (error) {
     console.error('Error inicializando el mapa:', error)
   }
 }
-
-// Lifecycle hooks
-onMounted(() => {
-  console.log('TheMap mounted - esperando inicialización del contenedor')
-})
 
 onUnmounted(() => {
   // Limpiar eventos del mapa
@@ -104,7 +97,6 @@ onUnmounted(() => {
   // Destruir el mapa
   mapService.destroy()
 
-  console.log('TheMap unmounted - recursos limpiados')
 })
 </script>
 

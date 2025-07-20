@@ -51,7 +51,6 @@ const menuItems = computed(() => [
     icon: 'fas fa-table',
     text: 'Ver atributos',
     action: () => {
-      console.log('Ver atributos clicked for layer:', props.layerId)
       store.showAttributeTable(props.layerId)
       store.hideContextMenu()
     }
