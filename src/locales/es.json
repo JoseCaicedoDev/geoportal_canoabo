@@ -16,7 +16,32 @@
     "baseLayers": "Capas Base",
     "dataLayers": "Capas de Datos",
     "analysis": {
-      "title": "Herramientas de análisis próximamente"
+      "title": "Análisis de Suelos",
+      "soilTexture": {
+        "title": "Distribución de Texturas",
+        "description": "Análisis de la textura del suelo en el primer horizonte (H1)",
+        "loading": "Cargando datos de textura...",
+        "noData": "No hay datos de textura disponibles",
+        "chartTitle": "Distribución de Texturas del Suelo",
+        "samples": "muestras"
+      },
+      "organicMatter": {
+        "title": "Comparación de Perfiles",
+        "description": "Materia orgánica por horizonte del suelo",
+        "loading": "Cargando datos de materia orgánica...",
+        "noData": "No hay datos de materia orgánica disponibles",
+        "chartTitle": "Materia Orgánica por Horizonte",
+        "horizons": {
+          "h1": "Horizonte 1",
+          "h2": "Horizonte 2",
+          "h3": "Horizonte 3",
+          "h4": "Horizonte 4"
+        },
+        "yAxisLabel": "Materia Orgánica (%)",
+        "xAxisLabel": "Horizontes",
+        "averageLabel": "Promedio",
+        "samples": "muestras analizadas"
+      }
     },
     "info": {
       "title": "Información del proyecto próximamente"

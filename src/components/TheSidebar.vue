@@ -12,6 +12,10 @@ import DataLayersPanel from './sidebar/DataLayersPanel.vue'
 import SidebarFooter from './sidebar/SidebarFooter.vue'
 import LayerContextMenu from './LayerContextMenu.vue'
 
+// Componentes de análisis
+import SoilTextureChart from './analysis/SoilTextureChart.vue'
+import OrganicMatterChart from './analysis/OrganicMatterChart.vue'
+
 const { isDarkMode } = useDarkMode()
 const store = useLayerStore()
 const { t } = useI18n()
@@ -245,11 +249,12 @@ onUnmounted(() => {
       </div>
 
       <!-- Analysis Tab Content -->
-      <div v-show="activeTab === 'analysis'" class="p-3">
-        <div class="text-center text-gray-600 dark:text-gray-400 py-8">
-          <i class="fas fa-chart-bar text-4xl mb-4"></i>
-          <p>{{ $t('sidebar.analysis.title') }}</p>
-        </div>
+      <div v-show="activeTab === 'analysis'" class="p-3 space-y-6">
+        <!-- Soil Texture Analysis -->
+        <SoilTextureChart />
+
+        <!-- Organic Matter Profile Analysis -->
+        <OrganicMatterChart />
       </div>
 
       <!-- Info Tab Content -->

@@ -16,7 +16,32 @@
     "baseLayers": "Base Layers",
     "dataLayers": "Data Layers",
     "analysis": {
-      "title": "Analysis tools coming soon"
+      "title": "Soil Analysis",
+      "soilTexture": {
+        "title": "Texture Distribution",
+        "description": "Soil texture analysis in the first horizon (H1)",
+        "loading": "Loading texture data...",
+        "noData": "No texture data available",
+        "chartTitle": "Soil Texture Distribution",
+        "samples": "samples"
+      },
+      "organicMatter": {
+        "title": "Profile Comparison",
+        "description": "Organic matter by soil horizon",
+        "loading": "Loading organic matter data...",
+        "noData": "No organic matter data available",
+        "chartTitle": "Organic Matter by Horizon",
+        "horizons": {
+          "h1": "Horizon 1",
+          "h2": "Horizon 2",
+          "h3": "Horizon 3",
+          "h4": "Horizon 4"
+        },
+        "yAxisLabel": "Organic Matter (%)",
+        "xAxisLabel": "Horizons",
+        "averageLabel": "Average",
+        "samples": "samples analyzed"
+      }
     },
     "info": {
       "title": "Project information coming soon"
