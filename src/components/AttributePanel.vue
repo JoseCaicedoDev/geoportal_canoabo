@@ -154,7 +154,7 @@ const displayTotalCount = computed(() => {
 const filteredCount = computed(() => {
   const hasFilter = searchTerm.value && searchTerm.value.trim()
   if (!hasFilter) return undefined
-  
+
   return searchResults.value?.total || 0
 })
 

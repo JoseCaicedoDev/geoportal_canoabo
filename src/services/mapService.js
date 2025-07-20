@@ -282,7 +282,10 @@ class MapService {
   updateScale() {
     const scale = this.map.getZoom()
     // Convertir el zoom a una escala aproximada
-    return `1:${Math.round(559082264.028 / Math.pow(2, scale))}`
+    const scaleValue = Math.round(559082264.028 / Math.pow(2, scale))
+    // Formatear con separadores de miles usando regex para asegurar formato consistente
+    const formattedScale = scaleValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    return `1:${formattedScale}`
   }
 
   getCenter() {

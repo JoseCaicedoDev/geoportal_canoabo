@@ -1,10 +1,10 @@
 <template>
   <footer
-    class="bg-geo-dark p-2 mt-auto dark:bg-geo-dark/50"
+    class="bg-green-600 p-3 mt-auto border-t border-green-700"
     role="contentinfo"
   >
     <div class="flex items-center space-x-2">
-      <p class="text-sm text-geo-text/80">
+      <p class="text-sm text-white font-medium">
         © {{ currentYear }} {{ brand }} - Powered by {{ poweredBy }}
       </p>
     </div>

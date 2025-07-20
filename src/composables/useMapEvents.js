@@ -1,4 +1,9 @@
 import { ref } from 'vue'
+import proj4 from 'proj4'
+
+// Definir las proyecciones
+const wgs84 = 'EPSG:4326' // WGS84 (lat/lon)
+const utm19n = '+proj=utm +zone=19 +datum=WGS84 +units=m +no_defs' // EPSG:32619 - UTM Zone 19N
 
 /**
  * Composable para manejar eventos del mapa de manera reactiva
@@ -11,13 +16,24 @@ export function useMapEvents() {
 
   /**
    * Actualiza las coordenadas mostradas cuando el cursor se mueve sobre el mapa
+   * Convierte de WGS84 (lat/lon) a UTM Zone 19N (EPSG:32619)
    * @param {Object} event - Evento de Leaflet con coordenadas
    */
   const updateCoordinates = (event) => {
     if (event.latlng) {
-      const lat = event.latlng.lat.toFixed(6)
-      const lon = event.latlng.lng.toFixed(6)
-      mapCoordinates.value = `Lat: ${lat}, Lon: ${lon}`
+      try {
+        // Convertir de WGS84 a UTM Zone 19N
+        const [x, y] = proj4(wgs84, utm19n, [event.latlng.lng, event.latlng.lat])
+
+        // Formatear las coordenadas UTM con separadores de miles
+        const formattedX = Math.round(x).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+        const formattedY = Math.round(y).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+
+        mapCoordinates.value = `X: ${formattedX}, Y: ${formattedY}`
+      } catch (error) {
+        console.error('Error al convertir coordenadas:', error)
+        mapCoordinates.value = 'Error en coordenadas'
+      }
     }
   }
 
