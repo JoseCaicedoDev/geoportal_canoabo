@@ -105,6 +105,11 @@ class MapService {
   async addWFSLayer(layerId, url, options = {}) {
     try {
       console.log(`Cargando capa WFS: ${layerId} desde ${url}`)
+
+      // Import layerService to get configuration
+      const { layerService } = await import('./layerService.js')
+      const layerConfig = layerService.getLayerConfig(layerId)
+
       const response = await fetch(url)
 
       if (!response.ok) {
@@ -120,6 +125,21 @@ class MapService {
       }
 
       console.log(`GeoJSON cargado exitosamente: ${geojsonData.features.length} features`)
+
+      // Normalizar los IDs de los features para que coincidan con layerService
+      geojsonData.features.forEach((feature, index) => {
+        const props = feature.properties
+        // Use the same ID generation logic as layerService.getWFSData
+        const featureId = props.id || props.gml_id || props.fid || props.gid || props.objectid || `feature_${index}`
+
+        // Ensure feature has consistent ID
+        feature.id = featureId
+        if (!feature.properties.id) {
+          feature.properties.id = featureId
+        }
+
+        console.log(`Normalized feature ${index}: id=${featureId}, originalProps:`, props)
+      })
 
       let layer
 
@@ -179,16 +199,24 @@ class MapService {
         })
       } else {
         // Configuración para otras capas (ríos, perímetro, embalses)
+        // Use specific layer configuration if available
+        const configStyle = layerConfig ? layerConfig.style : {}
         const defaultStyle = {
           color: '#16a34a',
           weight: 2,
           opacity: 0.8,
-          fillOpacity: 0.3
+          fillOpacity: 0.3,
+          fillColor: '#16a34a'
         }
 
-        const layerConfig = {
+        // Merge configuration styles with defaults and options
+        const finalStyle = { ...defaultStyle, ...configStyle, ...options.style }
+
+        console.log(`Aplicando estilo para ${layerId}:`, finalStyle)
+
+        const layerGeoJSONConfig = {
           style: feature => {
-            return { ...defaultStyle, ...options.style }
+            return finalStyle
           },
           onEachFeature: (feature, layer) => {
             if (options.onEachFeature) {
@@ -209,10 +237,10 @@ class MapService {
         }
 
         if (options.pointToLayer) {
-          layerConfig.pointToLayer = options.pointToLayer
+          layerGeoJSONConfig.pointToLayer = options.pointToLayer
         }
 
-        layer = L.geoJSON(geojsonData, layerConfig)
+        layer = L.geoJSON(geojsonData, layerGeoJSONConfig)
       }
 
       this.layers.set(layerId, layer)
@@ -297,59 +325,165 @@ class MapService {
     this.clearSelection()
 
     const layer = this.layers.get(layerId)
-    if (!layer) return false
+    if (!layer) {
+      console.log('Layer not found:', layerId)
+      console.log('Available layers:', Array.from(this.layers.keys()))
+      return false
+    }
+
+    console.log(`Searching for feature ${featureId} in layer ${layerId}`)
+    console.log(`Layer has ${layer.getLayers().length} features`)
 
     // Find and highlight the feature
     let featureFound = false
+    const allFeatureIds = []
+
     layer.eachLayer((feature) => {
-      if (feature.feature && (feature.feature.id === featureId || feature.feature.properties?.id === featureId)) {
-        // Highlight the feature
-        this.highlightFeature(feature)
+      if (feature.feature && feature.feature.properties) {
+        const props = feature.feature.properties
 
-        // Zoom to feature
-        if (coordinates) {
-          this.map.setView([coordinates.lat, coordinates.lng], 16)
-        } else {
-          this.map.fitBounds(feature.getBounds(), { padding: [20, 20] })
+        // Collect all IDs for debugging
+        const possibleIds = [
+          props.id,
+          props.gml_id,
+          props.fid,
+          props.objectid,
+          props.gid,
+          feature.feature.id
+        ]
+
+        allFeatureIds.push({
+          featureIndex: allFeatureIds.length,
+          possibleIds: possibleIds.filter(id => id !== undefined),
+          properties: props
+        })
+
+        // Convert featureId to string for comparison
+        const searchId = String(featureId)
+
+        // Check if any of the possible IDs match
+        const idMatch = possibleIds.some(id => id && String(id) === searchId)
+
+        if (idMatch) {
+          console.log('Feature found for selection:', {
+            layerId,
+            featureId,
+            foundId: possibleIds.find(id => id && String(id) === searchId),
+            properties: props,
+            geometryType: feature.feature.geometry.type,
+            currentStyle: feature.options
+          })
+
+          // Highlight the feature
+          this.highlightFeature(feature)
+
+          // Zoom to feature
+          if (coordinates) {
+            this.map.setView([coordinates.lat, coordinates.lng], 16)
+          } else {
+            try {
+              const bounds = feature.getBounds()
+              this.map.fitBounds(bounds, { padding: [20, 20] })
+            } catch (e) {
+              // For point features that might not have getBounds
+              if (feature.getLatLng) {
+                this.map.setView(feature.getLatLng(), 16)
+              }
+            }
+          }
+
+          featureFound = true
+          return
         }
-
-        featureFound = true
-        return
       }
     })
+
+    if (!featureFound) {
+      console.log('Feature not found for selection:', {
+        layerId,
+        featureId,
+        searchId: String(featureId),
+        layerFeatureCount: layer.getLayers().length,
+        availableFeatureIds: allFeatureIds.slice(0, 5) // Show first 5 features for debugging
+      })
+    }
 
     return featureFound
   }
 
   highlightFeature(feature) {
+    console.log('Highlighting feature:', feature)
+
     // Store original style
     if (!feature._originalStyle) {
       feature._originalStyle = {
         color: feature.options.color,
         weight: feature.options.weight,
         fillColor: feature.options.fillColor,
-        fillOpacity: feature.options.fillOpacity
+        fillOpacity: feature.options.fillOpacity,
+        opacity: feature.options.opacity,
+        radius: feature.options.radius
       }
     }
 
-    // Apply highlight style
-    feature.setStyle({
-      color: '#ff0000',
-      weight: 3,
-      fillColor: '#ff0000',
-      fillOpacity: 0.7
-    })
+    // Apply highlight style based on geometry type
+    const geomType = feature.feature.geometry.type
+
+    if (geomType === 'Point') {
+      // For points (like suelos)
+      feature.setStyle({
+        color: '#ff0000',
+        weight: 3,
+        fillColor: '#ff0000',
+        fillOpacity: 0.9,
+        radius: (feature.options.radius || 6) + 2
+      })
+    } else if (geomType === 'LineString' || geomType === 'MultiLineString') {
+      // For lines (like ríos)
+      feature.setStyle({
+        color: '#ff0000',
+        weight: 5,
+        opacity: 1
+      })
+    } else if (geomType === 'Polygon' || geomType === 'MultiPolygon') {
+      // For polygons (like perímetro, embalse)
+      feature.setStyle({
+        color: '#ff0000',
+        weight: 4,
+        opacity: 1,
+        fillColor: '#ff0000',
+        fillOpacity: 0.4
+      })
+    } else {
+      // Fallback for unknown geometry types
+      feature.setStyle({
+        color: '#ff0000',
+        weight: 4,
+        fillColor: '#ff0000',
+        fillOpacity: 0.5,
+        opacity: 1
+      })
+    }
 
     // Store reference for clearing later
     this.selectedFeature = feature
+
+    console.log('Feature highlighted with style:', {
+      geomType,
+      style: feature.options
+    })
   }
 
   clearSelection() {
     if (this.selectedFeature) {
+      console.log('Clearing selection for feature:', this.selectedFeature)
+
       // Restore original style
       if (this.selectedFeature._originalStyle) {
         this.selectedFeature.setStyle(this.selectedFeature._originalStyle)
+        console.log('Original style restored:', this.selectedFeature._originalStyle)
       }
+
       this.selectedFeature = null
     }
   }

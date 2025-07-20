@@ -156,19 +156,54 @@ export const layerService = {
       const geojson = await response.json()
 
       // Convertir GeoJSON features a formato de tabla
-      return geojson.features.map((feature, index) => {
+      const processedFeatures = geojson.features.map((feature, index) => {
         const props = feature.properties
-        return {
-          id: props.id || props.gml_id || `feature_${index}`,
+
+        // Extract ID from multiple possible sources
+        const featureId = props.id || props.gml_id || props.fid || props.gid || props.objectid || `feature_${index}`
+
+        const processedFeature = {
+          // Include all possible ID fields for selection
+          id: featureId,
+          fid: props.fid || props.gml_id || featureId,
+          gml_id: props.gml_id || featureId,
+          gid: props.gid || featureId,
+          objectid: props.objectid || featureId,
+
+          // Standard fields
           nombre: props.nombre || props.h1_text || props.name || props.Name || 'Sin nombre',
           tipo: props.tipo || props.type || props.Type || 'N/A',
           area: props.area || props.Area || 'N/A',
           ph: props.ph || props.pH || 'N/A',
           clasificacion: props.clasificacion || props.h1_text || 'N/A',
           fuente: 'WFS GeoServer',
-          ...props // Incluir todas las propiedades originales
+
+          // Include geometry for selection
+          geometry: feature.geometry,
+
+          // Include all original properties
+          ...props
         }
+
+        // Log first few features for debugging
+        if (index < 3) {
+          console.log(`${layerId} feature ${index}:`, {
+            originalProps: props,
+            processedIds: {
+              id: processedFeature.id,
+              fid: processedFeature.fid,
+              gml_id: processedFeature.gml_id,
+              gid: processedFeature.gid,
+              objectid: processedFeature.objectid
+            }
+          })
+        }
+
+        return processedFeature
       })
+
+      console.log(`${layerId}: Processed ${processedFeatures.length} features`)
+      return processedFeatures
     } catch (error) {
       console.error('Error getting WFS data:', error)
       return []
@@ -273,11 +308,21 @@ export const layerService = {
 
       // Get feature data to find coordinates if needed
       const layerData = await this.getLayerData(layerId)
-      const feature = layerData.find(item =>
-        item.id === featureId ||
-        item.fid === featureId ||
-        String(item.id) === String(featureId)
-      )
+      const feature = layerData.find(item => {
+        // Try multiple ID fields for matching
+        const possibleIds = [
+          item.id,
+          item.fid,
+          item.gml_id,
+          item.gid,
+          item.objectid
+        ]
+
+        // Convert featureId to string for comparison
+        const searchId = String(featureId)
+
+        return possibleIds.some(id => id && String(id) === searchId)
+      })
 
       let coordinates = null
       if (feature && feature.geometry) {
@@ -289,6 +334,14 @@ export const layerService = {
           }
         }
       }
+
+      console.log('Attempting to select feature:', {
+        layerId,
+        featureId,
+        featureFound: !!feature,
+        coordinates,
+        totalFeatures: layerData.length
+      })
 
       // Select and zoom to feature on map
       return mapService.selectFeature(layerId, featureId, coordinates)
