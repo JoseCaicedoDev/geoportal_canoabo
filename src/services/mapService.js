@@ -30,6 +30,7 @@ class MapService {
     this.currentBaseLayerId = 'world-imagery' // Track current base layer
     this.initialCenter = [10.1833, -68.2833] // Default Canoabo coordinates
     this.initialZoom = 12 // Default zoom
+    this.currentTooltip = null // For feature name tooltips
   }
 
   initializeMap(containerId, options = {}) {
@@ -364,7 +365,7 @@ class MapService {
   }
 
   // Feature selection and highlighting
-  selectFeature(layerId, featureId, coordinates = null) {
+  selectFeature(layerId, featureId, coordinates = null, nameValue = null) {
     // Clear previous selections
     this.clearSelection()
 
@@ -402,6 +403,11 @@ class MapService {
         if (idMatch) {
           // Highlight the feature
           this.highlightFeature(feature)
+
+          // Add tooltip with name if provided
+          if (nameValue) {
+            this.addFeatureTooltip(feature, nameValue)
+          }
 
           // Zoom to feature
           if (coordinates) {
@@ -492,10 +498,52 @@ class MapService {
 
       this.selectedFeature = null
     }
+
+    // Clear tooltips
+    this.clearTooltips()
   }
 
   zoomToFeature(layerId, featureId, coordinates = null) {
     return this.selectFeature(layerId, featureId, coordinates)
+  }
+
+  addFeatureTooltip(feature, nameValue) {
+    // Remove any existing tooltip
+    if (this.currentTooltip) {
+      this.map.removeLayer(this.currentTooltip)
+    }
+
+    let position = null
+
+    // Get position based on geometry type
+    if (feature.feature.geometry.type === 'Point') {
+      position = feature.getLatLng()
+    } else if (feature.getBounds) {
+      // For polygons and lines, use center of bounds
+      const bounds = feature.getBounds()
+      position = bounds.getCenter()
+    }
+
+    if (position) {
+      // Create a tooltip with the name
+      this.currentTooltip = L.tooltip({
+        permanent: true,
+        direction: 'top',
+        offset: [0, -10],
+        className: 'feature-name-tooltip'
+      })
+        .setContent(`<div class="font-medium text-sm">${nameValue}</div>`)
+        .setLatLng(position)
+
+      this.currentTooltip.addTo(this.map)
+    }
+  }
+
+  clearTooltips() {
+    if (this.currentTooltip) {
+      this.map.removeLayer(this.currentTooltip)
+      this.currentTooltip = null
+    }
   }
 
   toggleFullscreen() {

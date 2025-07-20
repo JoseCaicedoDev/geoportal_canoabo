@@ -371,7 +371,7 @@ export const layerService = {
   },
 
   // Feature selection and map interaction
-  async zoomToFeature(layerId, featureId) {
+  async zoomToFeature(layerId, featureId, nameValue = null) {
     try {
       // Import mapService here to avoid circular dependency
       const { mapService } = await import('./mapService.js')
@@ -410,16 +410,16 @@ export const layerService = {
         console.warn('Feature not found or missing geometry for ID:', featureId)
       }
       
-      // Select and zoom to feature on map
-      return mapService.selectFeature(layerId, featureId, coordinates)
+      // Select and zoom to feature on map, pass name for tooltip
+      return mapService.selectFeature(layerId, featureId, coordinates, nameValue)
     } catch (error) {
       console.error('Error zooming to feature:', error)
       return false
     }
   },
 
-  async selectFeatureOnMap(layerId, featureId) {
-    return this.zoomToFeature(layerId, featureId)
+  async selectFeatureOnMap(layerId, featureId, nameValue = null) {
+    return this.zoomToFeature(layerId, featureId, nameValue)
   },
 
   // Extraer el nombre técnico de la capa desde la URL WFS

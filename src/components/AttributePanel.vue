@@ -251,9 +251,12 @@ const selectFeatureOnMap = async (row) => {
   try {
     // Try different possible ID fields
     const featureId = row.id || row.fid || row.objectid || row.gid
+    
+    // Get the name value for the tooltip
+    const nameValue = getNameValue(row)
 
     if (featureId && store.currentLayerId) {
-      const success = await layerService.selectFeatureOnMap(store.currentLayerId, featureId)
+      const success = await layerService.selectFeatureOnMap(store.currentLayerId, featureId, nameValue)
 
       if (success) {
         showStatusMessage(`Feature ${featureId} seleccionado en el mapa`)
@@ -267,6 +270,11 @@ const selectFeatureOnMap = async (row) => {
     console.error('Error selecting feature on map:', error)
     showStatusMessage('Error al seleccionar feature en el mapa', 'error')
   }
+}
+
+const getNameValue = (row) => {
+  // Buscar el campo nombre o name en el registro
+  return row.nombre || row.name || row.Name || row.NOMBRE || ''
 }
 
 const clearMapSelection = async () => {
