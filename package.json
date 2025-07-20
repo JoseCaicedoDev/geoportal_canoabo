@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build:github": "vite build --base=/geoportal-canoabo/",
+    "build:github": "vite build --base=/geoportal_canoabo/",
     "deploy": "npm run build:github"
   },
   "dependencies": {

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geoportal Canoabo</title>
+    <script>
+        // Redirección para GitHub Pages SPA
+        const path = window.location.pathname.slice(1);
+        const base = '/geoportal_canoabo/';
+        
+        if (path && !path.includes('geoportal_canoabo')) {
+            window.location.replace(window.location.origin + base + '#/' + path);
+        } else {
+            window.location.replace(window.location.origin + base);
+        }
+    </script>
+</head>
+<body>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>Redirigiendo...</h1>
+        <p>Si no eres redirigido automáticamente, <a href="/geoportal_canoabo/">haz clic aquí</a>.</p>
+    </div>
+</body>
+</html>

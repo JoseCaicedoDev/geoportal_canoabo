@@ -7,7 +7,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 // https://vite.dev/config/
 export default defineConfig({
   // Configuración para GitHub Pages
-  base: '/geoportal-canoabo/',
+  base: '/geoportal_canoabo/',
   
   plugins: [
     vue(),
