@@ -15,12 +15,11 @@
         class="ml-2 text-sm text-geo-text/60 font-normal"
         :aria-label="`Capa activa: ${layerDisplayName}`"
       >
-        - {{ layerDisplayName }}
         <span
           v-if="totalCount !== undefined"
           class="ml-2 text-geo-text/80 font-medium"
         >
-          - Total: {{ totalCount }}{{ selectedCount !== undefined && selectedCount > 0 ? `, Seleccionado: ${selectedCount}` : '' }}
+        Total: {{ totalCount }}{{ selectedCount !== undefined && selectedCount > 0 ? `, Seleccionado: ${selectedCount}` : '' }}
         </span>
       </span>
     </h1>

@@ -80,7 +80,8 @@ import {
   useAttributePagination,
   useAttributeSearch,
   useAttributeSorting,
-  useAttributeExport
+  useAttributeExport,
+  useExcelExport
 } from '@/composables'
 
 // Store
@@ -105,6 +106,7 @@ const pagination = useAttributePagination(
   10
 )
 const exportComposable = useAttributeExport()
+const excelExport = useExcelExport()
 
 // Computed properties
 const layerFields = computed(() => {
@@ -128,7 +130,7 @@ const headerTitle = computed(() =>
 )
 
 const exportButtonText = computed(() =>
-  `Exportar (${layerData.value.length})`
+  `Exportar`
 )
 
 // Contadores para el header
@@ -272,17 +274,26 @@ const handleClearSelection = () => {
 }
 
 const handleExportSelected = async () => {
-  if (selectedRowIndex.value === null) return
+  if (selectedRowIndex.value === null) {
+    showStatusMessage('No hay datos seleccionados para exportar', 'error')
+    return
+  }
 
   try {
     const selectedData = [paginatedAttributes.value[selectedRowIndex.value]]
-    const filename = exportComposable.getSuggestedFilename(
-      store.currentLayerId,
-      'selected_attributes'
+    const layerName = displayName.value || 'datos'
+
+    const result = excelExport.exportSelectedData(
+      selectedData,
+      tableColumns.value,
+      layerName
     )
 
-    await exportComposable.exportToCSV(selectedData, filename, tableColumns.value)
-    showStatusMessage('Selección exportada correctamente')
+    if (result.success) {
+      showStatusMessage(result.message)
+    } else {
+      showStatusMessage(result.message, 'error')
+    }
   } catch (error) {
     showStatusMessage('Error al exportar la selección', 'error')
   }
@@ -290,7 +301,23 @@ const handleExportSelected = async () => {
 
 const handleExportAll = async () => {
   try {
-    await exportAttributes()
+    if (!layerData.value.length) {
+      showStatusMessage('No hay datos para exportar', 'error')
+      return
+    }
+
+    const layerName = displayName.value || 'datos'
+    const result = excelExport.exportAllData(
+      layerData.value,
+      tableColumns.value,
+      layerName
+    )
+
+    if (result.success) {
+      showStatusMessage(result.message)
+    } else {
+      showStatusMessage(result.message, 'error')
+    }
   } catch (error) {
     showStatusMessage('Error al exportar los datos', 'error')
   }
