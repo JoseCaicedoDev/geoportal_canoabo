@@ -16,6 +16,12 @@
         :aria-label="`Capa activa: ${layerDisplayName}`"
       >
         - {{ layerDisplayName }}
+        <span
+          v-if="totalCount !== undefined"
+          class="ml-2 text-geo-text/80 font-medium"
+        >
+          - Total: {{ totalCount }}{{ selectedCount !== undefined && selectedCount > 0 ? `, Seleccionado: ${selectedCount}` : '' }}
+        </span>
       </span>
     </h1>
 
@@ -56,6 +62,14 @@ const props = defineProps({
   layerDisplayName: {
     type: String,
     default: ''
+  },
+  totalCount: {
+    type: Number,
+    default: undefined
+  },
+  selectedCount: {
+    type: Number,
+    default: undefined
   },
   isExportDisabled: {
     type: Boolean,

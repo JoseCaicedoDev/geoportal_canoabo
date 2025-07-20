@@ -10,6 +10,8 @@
     <AttributeHeader
       :title="headerTitle"
       :layer-display-name="displayName"
+      :total-count="displayTotalCount"
+      :selected-count="selectedCount"
       :export-button-text="exportButtonText"
       @export-attributes="handleExportAll"
       @close-panel="closePanel"
@@ -128,6 +130,22 @@ const headerTitle = computed(() =>
 const exportButtonText = computed(() =>
   `Exportar (${layerData.value.length})`
 )
+
+// Contadores para el header
+const totalCount = computed(() => layerData.value.length)
+
+const selectedCount = computed(() => {
+  // Si hay una fila seleccionada, mostrar 1, sino 0
+  return selectedRowIndex.value !== null ? 1 : 0
+})
+
+// Si hay filtro activo, mostrar total filtrado en lugar del total general
+const displayTotalCount = computed(() => {
+  if (searchTerm.value && searchTerm.value.trim()) {
+    return searchResults.total
+  }
+  return totalCount.value
+})
 
 const tableColumns = computed(() => {
   return layerFields.value.map(field => ({

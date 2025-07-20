@@ -35,17 +35,18 @@
       <table class="w-full divide-y divide-geo-border" style="min-width: 1200px;">
         <!-- Table Header -->
         <thead
-          class="bg-geo-primary/5 sticky top-0"
+          class="bg-white dark:bg-gray-800 border-b border-geo-border sticky top-0 z-10"
           role="rowgroup"
+          style="box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
         >
           <tr role="row">
             <th
               v-for="column in columns"
               :key="column.key"
               scope="col"
-              class="px-4 py-3 text-left text-xs font-medium text-geo-text/70 uppercase tracking-wider cursor-pointer hover:bg-geo-primary/10 transition-colors"
+              class="px-4 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors border-r border-gray-200 dark:border-gray-600 last:border-r-0"
               style="min-width: 120px;"
-              :class="{ 'bg-geo-primary/10': sortBy === column.key }"
+              :class="{ 'bg-blue-50 dark:bg-blue-900/30': sortBy === column.key }"
               @click="$emit('sort', column.key)"
               :aria-sort="getSortDirection(column.key)"
               role="columnheader"

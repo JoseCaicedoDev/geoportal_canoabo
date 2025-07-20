@@ -165,7 +165,7 @@ export const layerService = {
         const processedFeature = {
           // Primary ID for selection (only add if not already exists)
           id: featureId,
-          
+
           // Include geometry for selection
           geometry: feature.geometry,
 
