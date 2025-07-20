@@ -19,7 +19,9 @@
           v-if="totalCount !== undefined"
           class="ml-2 text-geo-text/80 font-medium"
         >
-        Total: {{ totalCount }}{{ selectedCount !== undefined && selectedCount > 0 ? `, Seleccionado: ${selectedCount}` : '' }}
+          Total: {{ totalCount }}
+          <span v-if="filteredCount !== undefined">, Filtrado: {{ filteredCount }}</span>
+          <span v-if="selectedCount !== undefined && selectedCount > 0">, Seleccionado: {{ selectedCount }}</span>
         </span>
       </span>
     </h1>
@@ -63,6 +65,10 @@ const props = defineProps({
     default: ''
   },
   totalCount: {
+    type: Number,
+    default: undefined
+  },
+  filteredCount: {
     type: Number,
     default: undefined
   },

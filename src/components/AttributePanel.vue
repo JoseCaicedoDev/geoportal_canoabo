@@ -10,7 +10,8 @@
     <AttributeHeader
       :title="headerTitle"
       :layer-display-name="displayName"
-      :total-count="displayTotalCount"
+      :total-count="totalCount"
+      :filtered-count="filteredCount"
       :selected-count="selectedCount"
       :export-button-text="exportButtonText"
       @export-attributes="handleExportAll"
@@ -21,7 +22,7 @@
     <AttributeControls
       :search-term="searchTerm"
       :records-per-page="pagination.itemsPerPage"
-      :total-results="searchResults.total"
+      :total-results="searchResults.value?.total || 0"
       @search-change="handleSearchChange"
       @records-change="handleRecordsPerPageChange"
     />
@@ -51,7 +52,7 @@
     <!-- Footer -->
     <AttributeFooter
       :total-records="layerData.length"
-      :filtered-records="searchResults.total"
+      :filtered-records="searchResults.value?.total || 0"
       :selected-count="attributeData.selectedCount.value"
       :exporting="exportComposable.exporting.value"
       :refreshing="refreshing"
@@ -144,9 +145,17 @@ const selectedCount = computed(() => {
 // Si hay filtro activo, mostrar total filtrado en lugar del total general
 const displayTotalCount = computed(() => {
   if (searchTerm.value && searchTerm.value.trim()) {
-    return searchResults.total
+    return searchResults.value?.total || 0
   }
   return totalCount.value
+})
+
+// Conteo de registros filtrados
+const filteredCount = computed(() => {
+  const hasFilter = searchTerm.value && searchTerm.value.trim()
+  if (!hasFilter) return undefined
+  
+  return searchResults.value?.total || 0
 })
 
 const tableColumns = computed(() => {
@@ -162,7 +171,7 @@ const searchTerm = computed({
   set: (value) => searchComposable.setSearchTerm(value)
 })
 
-const searchResults = computed(() => searchComposable.searchResults.value)
+const searchResults = computed(() => searchComposable.searchResults.value || { total: 0, hasResults: false, isFiltered: false })
 
 const paginatedAttributes = computed(() => {
   const sorted = sorting.sortedData.value
