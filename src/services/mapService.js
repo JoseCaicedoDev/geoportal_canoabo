@@ -242,6 +242,39 @@ class MapService {
     const layer = this.layers.get(layerId)
     if (layer && this.map) {
       layer.addTo(this.map)
+
+      // Aplicar orden de capas usando bringToFront/bringToBack para garantizar el orden correcto
+      // El orden debe ser: perímetro (atrás), embalse, ríos, suelos (adelante)
+
+      // Primero, reordenar todas las capas existentes
+      setTimeout(() => {
+        // Perímetro va al fondo
+        const perimetroLayer = this.layers.get('perimetro-wfs')
+        if (perimetroLayer && this.map.hasLayer(perimetroLayer)) {
+          perimetroLayer.bringToBack()
+        }
+
+        // Embalse va después del perímetro
+        const embalseLayer = this.layers.get('embalse-wfs')
+        if (embalseLayer && this.map.hasLayer(embalseLayer)) {
+          embalseLayer.bringToFront()
+          if (perimetroLayer && this.map.hasLayer(perimetroLayer)) {
+            perimetroLayer.bringToBack()
+          }
+        }
+
+        // Ríos van después del embalse
+        const riosLayer = this.layers.get('rios-wfs')
+        if (riosLayer && this.map.hasLayer(riosLayer)) {
+          riosLayer.bringToFront()
+        }
+
+        // Suelos van arriba de todo
+        const suelosLayer = this.layers.get('suelos-wfs')
+        if (suelosLayer && this.map.hasLayer(suelosLayer)) {
+          suelosLayer.bringToFront()
+        }
+      }, 100) // Small delay to ensure all layers are properly added
     }
   }
 
