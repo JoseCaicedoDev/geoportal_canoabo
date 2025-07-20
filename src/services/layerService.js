@@ -443,16 +443,34 @@ export const layerService = {
     return null
   },
 
+  // Extraer el nombre del archivo GeoJSON desde la URL
+  getGeoJSONFileName(layerId) {
+    const config = this.getLayerConfig(layerId)
+    if (!config || !config.url) {
+      return null
+    }
+
+    try {
+      // Extraer el nombre del archivo desde la URL
+      const urlPath = config.url
+      const fileName = urlPath.split('/').pop() // Obtiene la última parte de la ruta
+      return fileName || null
+    } catch (error) {
+      console.error('Error extracting GeoJSON file name:', error)
+      return null
+    }
+  },
+
   // Obtener información detallada de la capa para el modal
   async getLayerDetails(layerId) {
     try {
       const config = this.getLayerConfig(layerId)
       const displayName = this.getLayerDisplayName(layerId)
-      const technicalName = this.getLayerTechnicalName(layerId)
+      const geoJsonFileName = this.getGeoJSONFileName(layerId)
 
       if (!config) {
         return {
-          name: technicalName || displayName,
+          name: geoJsonFileName || displayName,
           displayName: displayName,
           geometryType: 'Unknown',
           recordCount: 0,
@@ -466,7 +484,7 @@ export const layerService = {
       let data = []
       let variables = []
 
-      if (config.type === 'wfs') {
+      if (config.type === 'wfs' || config.type === 'local') {
         data = await this.getWFSData(layerId)
 
         // Extraer variables (campos) de los datos
@@ -478,7 +496,7 @@ export const layerService = {
       }
 
       return {
-        name: technicalName || displayName, // Nombre técnico para el campo "Layer name"
+        name: geoJsonFileName || displayName, // Nombre del archivo GeoJSON para el campo "Layer name"
         displayName: displayName, // Nombre amigable para el título del modal
         geometryType: config.geometryType || 'Unknown',
         recordCount: data.length,
@@ -490,10 +508,10 @@ export const layerService = {
     } catch (error) {
       console.error('Error getting layer details:', error)
       const displayName = this.getLayerDisplayName(layerId)
-      const technicalName = this.getLayerTechnicalName(layerId)
+      const geoJsonFileName = this.getGeoJSONFileName(layerId)
 
       return {
-        name: technicalName || displayName,
+        name: geoJsonFileName || displayName,
         displayName: displayName,
         geometryType: 'Unknown',
         recordCount: 0,
