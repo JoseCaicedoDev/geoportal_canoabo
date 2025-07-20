@@ -31,7 +31,7 @@ const wfsLayers = ref({})
 const sidebarTabs = computed(() => [
   { id: 'layers', label: t('sidebar.tabs.layers'), icon: 'fas fa-layer-group' },
   { id: 'analysis', label: t('sidebar.tabs.analysis'), icon: 'fas fa-chart-bar' },
-  { id: 'info', label: t('sidebar.tabs.info'), icon: 'fas fa-info-circle' }
+  { id: 'ai', label: t('sidebar.tabs.ai'), icon: 'fas fa-robot' }
 ])
 
 // Importar mapService para manejar capas base
@@ -257,11 +257,33 @@ onUnmounted(() => {
         <OrganicMatterChart />
       </div>
 
-      <!-- Info Tab Content -->
-      <div v-show="activeTab === 'info'" class="p-3">
-        <div class="text-center text-gray-600 dark:text-gray-400 py-8">
-          <i class="fas fa-info-circle text-4xl mb-4"></i>
-          <p>{{ $t('sidebar.info.title') }}</p>
+      <!-- IA Tab Content -->
+      <div v-show="activeTab === 'ai'" class="h-full flex flex-col">
+        <!-- Header del IA -->
+        <div class="p-3 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex items-center">
+            <i class="fas fa-robot text-green-600 dark:text-green-400 text-lg mr-2"></i>
+            <div>
+              <h3 class="font-semibold text-gray-900 dark:text-white">
+                {{ t('sidebar.ai.title') }}
+              </h3>
+              <p class="text-xs text-gray-600 dark:text-gray-400">
+                {{ t('sidebar.ai.description') }}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Chat embebido de n8n -->
+        <div class="flex-1 relative bg-white dark:bg-gray-800">
+          <iframe 
+            src="https://n8n-x7c3.onrender.com/webhook/d40c3554-2ec2-4a43-9719-27210a6445d1/chat"
+            class="w-full h-full border-0"
+            style="min-height: 400px;"
+            :title="t('sidebar.ai.title')"
+            allow="clipboard-read; clipboard-write"
+            sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox"
+          ></iframe>
         </div>
       </div>
     </main>

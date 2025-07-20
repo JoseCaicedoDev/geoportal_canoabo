@@ -11,7 +11,7 @@
     "tabs": {
       "layers": "Capas",
       "analysis": "Análisis",
-      "info": "Info"
+      "ai": "IA"
     },
     "baseLayers": "Capas Base",
     "dataLayers": "Capas de Datos",
@@ -43,8 +43,9 @@
         "samples": "muestras analizadas"
       }
     },
-    "info": {
-      "title": "Información del proyecto próximamente"
+    "ai": {
+      "title": "Asistente IA de Canoabo",
+      "description": "Pregunta sobre la cuenca de Canoabo"
     }
   },
   "layers": {

@@ -11,7 +11,7 @@
     "tabs": {
       "layers": "Layers",
       "analysis": "Analysis",
-      "info": "Info"
+      "ai": "AI"
     },
     "baseLayers": "Base Layers",
     "dataLayers": "Data Layers",
@@ -43,8 +43,9 @@
         "samples": "samples analyzed"
       }
     },
-    "info": {
-      "title": "Project information coming soon"
+    "ai": {
+      "title": "Canoabo AI Assistant",
+      "description": "Ask about the Canoabo basin"
     }
   },
   "layers": {
