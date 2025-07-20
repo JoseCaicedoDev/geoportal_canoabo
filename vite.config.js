@@ -6,6 +6,9 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Configuración para GitHub Pages
+  base: '/geoportal-canoabo/',
+  
   plugins: [
     vue(),
     vueJsx(),
@@ -15,6 +18,24 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  
+  // Configuración de build para producción
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['vue', 'vue-router', 'vue-i18n'],
+          leaflet: ['leaflet'],
+          charts: ['chart.js']
+        }
+      }
+    }
+  },
+  
   server: {
     proxy: {
       '/geoserver': {
