@@ -35,6 +35,8 @@ export function useDarkMode() {
 
   const toggleDarkMode = () => {
     isDarkMode.value = !isDarkMode.value
+    // Guardar preferencia manual
+    localStorage.setItem('darkMode', isDarkMode.value)
     updateTheme()
   }
 
@@ -53,23 +55,25 @@ export function useDarkMode() {
     } else {
       document.documentElement.classList.remove('dark')
     }
-
-    // Guardar preferencia
-    localStorage.setItem('darkMode', isDarkMode.value)
   }
 
   onMounted(() => {
     // Recuperar preferencia guardada o usar preferencia del sistema
     const savedTheme = localStorage.getItem('darkMode')
+
     if (savedTheme !== null) {
       isDarkMode.value = savedTheme === 'true'
     } else {
-      isDarkMode.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+      // Detectar preferencia del sistema
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      isDarkMode.value = systemPrefersDark
     }
+
     updateTheme()
 
     // Escuchar cambios en la preferencia del sistema
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+      // Solo actualizar si no hay preferencia manual guardada
       if (localStorage.getItem('darkMode') === null) {
         isDarkMode.value = e.matches
         updateTheme()
