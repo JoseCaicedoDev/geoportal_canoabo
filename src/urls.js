@@ -3,12 +3,13 @@
 // Detectar si estamos en desarrollo o producción
 const isDevelopment = import.meta.env.DEV;
 
-// Configuración del servidor GeoServer (HTTPS)
+// Configuración del servidor GeoServer
 const GEOSERVER_HTTPS_URL = 'https://geoserver.gira360.com/geoserver';
+const CORS_PROXY = 'https://api.allorigins.win/raw?url='; // Proxy CORS confiable
 
 const GEOSERVER_BASE = isDevelopment 
   ? '/geoserver' // En desarrollo, usar proxy de Vite
-  : GEOSERVER_HTTPS_URL; // En producción, usar directamente HTTPS (sin proxy necesario)
+  : `${CORS_PROXY}${encodeURIComponent(GEOSERVER_HTTPS_URL)}`; // En producción, usar proxy CORS
 
 // URLs de mapas base
 export const ESRI_WORLD_IMAGERY_URL = 'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
@@ -41,6 +42,7 @@ export const logGeoServerConfig = () => {
   console.log('🌍 GeoServer Config:', {
     isDevelopment,
     baseUrl: GEOSERVER_BASE,
-    protocol: 'HTTPS (direct connection)'
+    corsProxy: !isDevelopment ? CORS_PROXY : 'N/A (using Vite proxy)',
+    protocol: isDevelopment ? 'Proxy' : 'CORS Proxy'
   });
 };
